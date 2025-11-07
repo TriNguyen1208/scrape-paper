@@ -190,6 +190,31 @@ def get_all_papers(startId:str, endId:str):
         
     return paperList
 
+def get_all_id_with_version(
+    paper_list: list[arxiv.Result]
+) -> list[str]:
+    paper_list_id_version = []
+    for paper in paper_list:
+        paper_list_id_version.append(paper.entry_id.split('/')[-1])
+    return paper_list_id_version
 
+def get_all_id_without_version(
+    paper_list: list[arxiv.Result]
+) -> list[str]:
+    paper_list_id = []
+    dist = {}
+    for paper in paper_list:
+        id = paper.entry_id.split('/')[-1][:-2]
+        if id not in dist:
+            paper_list_id.append(id)
+    return paper_list_id
+
+def get_paper_from_id(
+    arxiv_id_list: list[str]
+) -> list[arxiv.Result]:
+    paper = list(arxiv.Client().results(arxiv.Search(id_list=arxiv_id_list)))
+    return paper
 
 paperList = get_all_papers(START_ID, END_ID)
+paper_id_version = get_all_id_with_version(paperList)
+paper_id_without_version = get_all_id_without_version(paperList)
