@@ -1,10 +1,11 @@
 import arxiv
 from datetime import timedelta
+import os
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
 
-def get_daily_papers(query='all', maxResults=1000,
+def get_daily_paper_ids(query='all', maxResults=1000,
                   sortBy=arxiv.SortCriterion.SubmittedDate,
                   sortOrder=arxiv.SortOrder.Ascending):
 
@@ -115,6 +116,34 @@ def get_date_range_from_id(startId, endId):
     
     return(paperList[0].published, paperList[1].published)
 
+
+def get_version_of_paper(arxivId):
+    '''
+    A function to get all the versions of a paper's ID
+
+    Parameter
+    ---------
+    arxivId: str
+        newest version's ID of a paper(format: 'http://arxiv.org/abs/xxxx.xxxxxvx', x is a digit from 0 to 9)
+
+    Return
+    ------
+    list
+        a list contains all versions' ID of a paper
+    '''
+    paperId = arxivId.split('/')[-1]
+    numberOfVersion = paperId.split('v')[1]
+    basePaperId = paperId.split('v')[0]
+    baseUrl = ''.join(arxivId[:len(arxivId) - len(paperId)])
+
+    versions = []
+
+    for version in range(int(numberOfVersion)):
+        versions.append(baseUrl + basePaperId + 'v' + str(version + 1))
+
+    return versions
+
+
 def get_all_papers(startId:str, endId:str):
     '''
     A function to crawl all the papers (all version from each paper) within startID and endID using arxiv API
@@ -137,6 +166,7 @@ def get_all_papers(startId:str, endId:str):
         for n in range((endDate - startDate).days + 1):
             yield startDate + timedelta(n)
 
+    paperIdList = []
     paperList = []
 
     for date in daterange(startDate, endDate):
@@ -145,13 +175,21 @@ def get_all_papers(startId:str, endId:str):
 
         print(f'Fetching papers on {date.strftime('%Y-%m-%d')}...')
 
-        dailyPaperList = get_daily_papers(query=query)
+        dailyPaperList = get_daily_paper_ids(query=query)
         if len(dailyPaperList) != 0:
-            print(f'\tNumber of fetched papers = {len(dailyPaperList)}')
+            print(f'\tNumber of fetched paper\'s ids = {len(dailyPaperList)}')
 
-        paperList.extend(dailyPaperList)
+        paperIdList.extend(dailyPaperList)
 
-    return filter_papers_in_id_range(paperList, startId, endId)
+    filteredPaperList = filter_papers_in_id_range(paperIdList, startId, endId)
+    for paper in filteredPaperList:
+        paperList.extend(get_version_of_paper(paper.entry_id))
+
+    print(f'Fetching {len(filteredPaperList)} paper ids')
+    print(f'Fetching {len(paperList)} papers')
+        
+    return paperList
+
+
 
 paperList = get_all_papers(START_ID, END_ID)
-print(f'Fetching {len(paperList)} papers')
