@@ -1,11 +1,14 @@
 import arxiv
 from datetime import timedelta
-import os
+import time
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
+TEST_END_ID = '2307.00140'
+BATCH_SIZE = 200
+CLIENT = arxiv.Client()
 
-def get_daily_paper_ids(query='all', maxResults=1000,
+def get_daily_paper_ids(query, maxResults=1000,
                   sortBy=arxiv.SortCriterion.SubmittedDate,
                   sortOrder=arxiv.SortOrder.Ascending):
 
@@ -25,8 +28,8 @@ def get_daily_paper_ids(query='all', maxResults=1000,
 
     Return
     ------
-    list
-        List of crawled papers
+    list of str
+        List of papers'id with format (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
     
     try:
@@ -36,19 +39,19 @@ def get_daily_paper_ids(query='all', maxResults=1000,
                         sort_order=sortOrder)
 
         
-        paperList = list(arxiv.Client().results(search))
+        paperList = list(CLIENT.results(search))
 
     except Exception as e:
         if 'Page of results was unexpectedly empty' in str(e):
             print('\t==>There is no paper on this date')
         else:
-            print(f'[EXCEPTION][get_all_paper]: {e}')
+            print(f'[EXCEPTION][get_daily_paper_ids]: {e}')
         return []
 
-    return paperList
+    return [get_id_from_arxiv_link(paper.entry_id, withVersion=True) for paper in paperList]
 
 
-def get_id_from_arxiv_link(url):
+def get_id_from_arxiv_link(url, withVersion=True):
     '''
     A function to get id from arxiv url
 
@@ -60,21 +63,26 @@ def get_id_from_arxiv_link(url):
     Return
     ------
     str
-        paper's ID without version (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
+        paper's ID with/without version (format: 'xxxx.xxxxxvx' or 'xxxx.xxxxx', x is a digit from 0 to 9)
     '''
+
     fullId = url.split('/abs/')[1]
-    arxivId = fullId.split('v')[0]
-    return arxivId
+
+    if withVersion:
+        return fullId
+    else:
+        arxivId = fullId.split('v')[0]
+        return arxivId
 
 
-def filter_papers_in_id_range(paperList, startId=None, endId=None):
+def filter_papers_in_id_range(paperIdList, startId=None, endId=None):
     '''
     A function to filter the list of papers in a given date range
 
     Parameters
     ----------
-    paperList: list of arxiv.Result
-        a list of paper to filter 
+    paperIdList: list of str
+        a list of papers' id to filter 
     startId: str
         paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
     endId: str
@@ -82,16 +90,16 @@ def filter_papers_in_id_range(paperList, startId=None, endId=None):
 
     Return
     ------
-    list of arxiv.Result
-        a list contains filtered papers
+    list of str
+        a list contains filtered papers'id (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
     if startId is None:
-        return [paper for paper in paperList if get_id_from_arxiv_link(paper.entry_id) <= endId]
+        return [paper for paper in paperIdList if paper <= endId]
     
     if endId is None:
-        return [paper for paper in paperList if startId <= get_id_from_arxiv_link(paper.entry_id)]
+        return [paper for paper in paperIdList if startId <= paper]
 
-    return [paper for paper in paperList if startId <= get_id_from_arxiv_link(paper.entry_id) <= endId]
+    return [paper for paper in paperIdList if startId <= paper <= endId]
 
 
 def get_date_range_from_id(startId, endId):
@@ -112,36 +120,34 @@ def get_date_range_from_id(startId, endId):
     '''
     search = arxiv.Search(id_list=[startId, endId])
     
-    paperList = list(arxiv.Client().results(search))
+    paperList = list(CLIENT.results(search))
     
     return(paperList[0].published, paperList[1].published)
 
 
-def get_version_of_paper(arxivId):
+def get_versions_of_paper(arxivId):
     '''
     A function to get all the versions of a paper's ID
 
     Parameter
     ---------
     arxivId: str
-        newest version's ID of a paper(format: 'http://arxiv.org/abs/xxxx.xxxxxvx', x is a digit from 0 to 9)
+        newest version's ID of a paper(format: 'xxxx.xxxxxvx', x is a digit from 0 to 9)
 
     Return
     ------
-    list
-        a list contains all versions' ID of a paper
+    list of str
+        a list contains all versions'id of a paper (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
-    paperId = arxivId.split('/')[-1]
-    numberOfVersion = paperId.split('v')[1]
-    basePaperId = paperId.split('v')[0]
-    baseUrl = ''.join(arxivId[:len(arxivId) - len(paperId)])
+    numberOfVersion = arxivId.split('v')[1]
+    basePaperId = arxivId.split('v')[0]
 
-    versions = []
+    versionsId = []
 
     for version in range(int(numberOfVersion)):
-        versions.append(baseUrl + basePaperId + 'v' + str(version + 1))
+        versionsId.append(basePaperId + 'v' + str(version + 1))
 
-    return versions
+    return versionsId
 
 
 def get_all_papers(startId:str, endId:str):
@@ -167,7 +173,7 @@ def get_all_papers(startId:str, endId:str):
             yield startDate + timedelta(n)
 
     paperIdList = []
-    paperList = []
+    versionIdList  = []
 
     for date in daterange(startDate, endDate):
         fmtDate = date.strftime('%Y%m%d')
@@ -176,20 +182,49 @@ def get_all_papers(startId:str, endId:str):
         print(f'Fetching papers on {date.strftime('%Y-%m-%d')}...')
 
         dailyPaperList = get_daily_paper_ids(query=query)
+        time.sleep(1) # small delay to avoid server overload
         if len(dailyPaperList) != 0:
             print(f'\tNumber of fetched paper\'s ids = {len(dailyPaperList)}')
 
         paperIdList.extend(dailyPaperList)
 
-    filteredPaperList = filter_papers_in_id_range(paperIdList, startId, endId)
-    for paper in filteredPaperList:
-        paperList.extend(get_version_of_paper(paper.entry_id))
+    for paperId in filter_papers_in_id_range(paperIdList, startId, endId):
+        versionIdList.extend(get_versions_of_paper(paperId))
 
-    print(f'Fetching {len(filteredPaperList)} paper ids')
-    print(f'Fetching {len(paperList)} papers')
-        
+    print('=' * 50)
+    print(f'Number of papers: {len(versionIdList)}')
+    print('Starting to get all the versions...')
+
+    paperList = []
+
+    for i in range(0, len(versionIdList), BATCH_SIZE):
+        print(f'Fetching batch {int((i + 1) / BATCH_SIZE) + 1}/{int(len(versionIdList) / BATCH_SIZE) + 1}...')
+        batch = versionIdList[i:i + BATCH_SIZE]
+        search = arxiv.Search(id_list=batch)
+        try:
+            paperList.extend(list(CLIENT.results(search)))
+            time.sleep(1) # small delay to avoid server overload
+        except Exception as e:
+            print(f"[ERROR][get_all_papers][] Fetching batch {i // BATCH_SIZE + 1}: {e}")
+
     return paperList
 
 
 
-paperList = get_all_papers(START_ID, END_ID)
+def main_func():
+    startTime = time.time()
+
+    paperList = get_all_papers(START_ID, END_ID)
+
+    duration = time.time() - startTime
+
+    print('=' * 50)
+    print(f'Duration: {(duration / 60):.3f}m')
+
+    # Print for checking
+    for i in range(5):
+        print(f'{paperList[i].entry_id} - {paperList[i].title}')
+
+
+
+main_func()
