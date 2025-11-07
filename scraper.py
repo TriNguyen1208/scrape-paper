@@ -65,8 +65,10 @@ def get_id_from_arxiv_link(url, withVersion=True):
     str
         paper's ID with/without version (format: 'xxxx.xxxxxvx' or 'xxxx.xxxxx', x is a digit from 0 to 9)
     '''
-
-    fullId = url.split('/abs/')[1]
+    if '/abs/' in url:
+        fullId = url.split('/abs/')[1]
+    else:
+        fullId = url
 
     if withVersion:
         return fullId
@@ -82,7 +84,7 @@ def filter_papers_in_id_range(paperIdList, startId=None, endId=None):
     Parameters
     ----------
     paperIdList: list of str
-        a list of papers' id to filter 
+        a list of papers' id to filter with format (xxxx.xxxxxvx, x is a digit from 0 to 9)
     startId: str
         paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
     endId: str
@@ -91,15 +93,15 @@ def filter_papers_in_id_range(paperIdList, startId=None, endId=None):
     Return
     ------
     list of str
-        a list contains filtered papers'id (xxxx.xxxxxvx, x is a digit from 0 to 9)
+        a list contains filtered papers'id with format (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
     if startId is None:
-        return [paper for paper in paperIdList if paper <= endId]
+        return [paper for paper in paperIdList if get_id_from_arxiv_link(paper, withVersion=False) <= endId]
     
     if endId is None:
-        return [paper for paper in paperIdList if startId <= paper]
+        return [paper for paper in paperIdList if startId <= get_id_from_arxiv_link(paper, withVersion=False)]
 
-    return [paper for paper in paperIdList if startId <= paper <= endId]
+    return [paper for paper in paperIdList if startId <= get_id_from_arxiv_link(paper, withVersion=False) <= endId]
 
 
 def get_date_range_from_id(startId, endId):
@@ -125,7 +127,7 @@ def get_date_range_from_id(startId, endId):
     return(paperList[0].published, paperList[1].published)
 
 
-def get_versions_of_paper(arxivId):
+def get_remaining_versions_of_paper(arxivId):
     '''
     A function to get all the versions of a paper's ID
 
@@ -137,14 +139,14 @@ def get_versions_of_paper(arxivId):
     Return
     ------
     list of str
-        a list contains all versions'id of a paper (xxxx.xxxxxvx, x is a digit from 0 to 9)
+        a list contains remaining versions'id of a paper (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
     numberOfVersion = arxivId.split('v')[1]
     basePaperId = arxivId.split('v')[0]
 
     versionsId = []
 
-    for version in range(int(numberOfVersion)):
+    for version in range(int(numberOfVersion) - 1):
         versionsId.append(basePaperId + 'v' + str(version + 1))
 
     return versionsId
@@ -173,7 +175,7 @@ def get_all_papers(startId:str, endId:str):
             yield startDate + timedelta(n)
 
     paperIdList = []
-    versionIdList  = []
+    paperList = []
 
     for date in daterange(startDate, endDate):
         fmtDate = date.strftime('%Y%m%d')
@@ -188,18 +190,24 @@ def get_all_papers(startId:str, endId:str):
 
         paperIdList.extend(dailyPaperList)
 
-    for paperId in filter_papers_in_id_range(paperIdList, startId, endId):
-        versionIdList.extend(get_versions_of_paper(paperId))
+    paperIdList = filter_papers_in_id_range(paperIdList, startId, endId)
 
+    remainingVersionList = []
+    for paper in paperIdList:
+        remainingVersionList.extend(get_remaining_versions_of_paper(paper))
+
+    paperIdList.extend(remainingVersionList)
+
+    # Debug
     print('=' * 50)
-    print(f'Number of papers: {len(versionIdList)}')
+    print(f'Number of papers: {len(paperIdList)}')
     print('Starting to get all the versions...')
 
-    paperList = []
+    paperIdList = sorted(paperIdList)
 
-    for i in range(0, len(versionIdList), BATCH_SIZE):
-        print(f'Fetching batch {int((i + 1) / BATCH_SIZE) + 1}/{int(len(versionIdList) / BATCH_SIZE) + 1}...')
-        batch = versionIdList[i:i + BATCH_SIZE]
+    for i in range(0, len(paperIdList), BATCH_SIZE):
+        print(f'Fetching batch {int((i + 1) / BATCH_SIZE) + 1}/{int(len(paperIdList) / BATCH_SIZE) + 1}...')
+        batch = paperIdList[i:i + BATCH_SIZE]
         search = arxiv.Search(id_list=batch)
         try:
             paperList.extend(list(CLIENT.results(search)))
@@ -219,7 +227,7 @@ def main_func():
     duration = time.time() - startTime
 
     print('=' * 50)
-    print(f'Duration: {(duration / 60):.3f}m')
+    print(f'Duration: {duration:.3f}s')
 
     # Print for checking
     for i in range(5):
