@@ -152,6 +152,26 @@ def get_remaining_versions_of_paper(arxivId):
     return versionsId
 
 
+def display_progress(currentValue, totalValue, displayText, numBars=50):
+    '''
+    A function to display progress bar
+    
+    Parameters
+    ----------
+    currentValue: float
+        current value
+    totalValue: float
+        total value
+    displayText: str
+        the bar's title
+    numBars: int
+        the length of the bar
+    '''
+    percent = (currentValue / totalValue)
+    displayBar = '█' * int(percent * numBars) + '-' * (numBars - int(percent * numBars))
+    print(f'{displayText}: |{displayBar}| {percent * 100:.2f}%', end='\r')
+    
+
 def get_all_papers(startId:str, endId:str):
     '''
     A function to crawl all the papers (all version from each paper) within startID and endID using arxiv API
@@ -163,10 +183,13 @@ def get_all_papers(startId:str, endId:str):
     endId: str
         paper's end ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
 
-    Return
+    Returns
     ------
     list of arxiv.Result
         a list contains crawled papers
+    
+    list of str
+        a list contains crawled papers' id (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
     '''
     (startDate, endDate) = get_date_range_from_id(startId, endId)
     
@@ -177,16 +200,14 @@ def get_all_papers(startId:str, endId:str):
     paperIdList = []
     paperList = []
 
-    for date in daterange(startDate, endDate):
+    for i, date in enumerate(daterange(startDate, endDate)):
         fmtDate = date.strftime('%Y%m%d')
         query = f'all AND submittedDate:[{fmtDate}0000 TO {fmtDate}2359]'
 
-        print(f'Fetching papers on {date.strftime('%Y-%m-%d')}...')
-
         dailyPaperList = get_daily_paper_ids(query=query)
         time.sleep(1) # small delay to avoid server overload
-        if len(dailyPaperList) != 0:
-            print(f'\tNumber of fetched paper\'s ids = {len(dailyPaperList)}')
+        
+        display_progress(i + 1, (endDate - startDate).days + 1, 'Get papers')
 
         paperIdList.extend(dailyPaperList)
 
@@ -198,41 +219,30 @@ def get_all_papers(startId:str, endId:str):
 
     paperIdList.extend(remainingVersionList)
 
-    # Debug
+    print()
     print('=' * 50)
-    print(f'Number of papers: {len(paperIdList)}')
-    print('Starting to get all the versions...')
 
     paperIdList = sorted(paperIdList)
 
     for i in range(0, len(paperIdList), BATCH_SIZE):
-        print(f'Fetching batch {int((i + 1) / BATCH_SIZE) + 1}/{int(len(paperIdList) / BATCH_SIZE) + 1}...')
+        display_progress(int((i + 1) / BATCH_SIZE) + 1, int(len(paperIdList) / BATCH_SIZE) + 1, 'Get all versions')
         batch = paperIdList[i:i + BATCH_SIZE]
         search = arxiv.Search(id_list=batch)
         try:
             paperList.extend(list(CLIENT.results(search)))
             time.sleep(1) # small delay to avoid server overload
         except Exception as e:
-            print(f"[ERROR][get_all_papers][] Fetching batch {i // BATCH_SIZE + 1}: {e}")
+            print(f"[ERROR][get_all_papers][] Fetching batch {int((i + 1) / BATCH_SIZE) + 1}: {e}")
 
     return paperList
 
-
-
-def main_func():
-    startTime = time.time()
-
-    paperList = get_all_papers(START_ID, END_ID)
-
-    duration = time.time() - startTime
-
-    print('=' * 50)
-    print(f'Duration: {duration:.3f}s')
-
+def test_func():
+    paperList = get_all_papers(START_ID, TEST_END_ID)
+    print()
     # Print for checking
     for i in range(5):
         print(f'{paperList[i].entry_id} - {paperList[i].title}')
 
 
 
-main_func()
+# test_func()
