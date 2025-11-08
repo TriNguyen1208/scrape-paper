@@ -1,6 +1,7 @@
 import arxiv
 from datetime import timedelta
 import time
+from analysis import apply_RAM_analysis, apply_time_analysis
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
@@ -236,13 +237,15 @@ def get_all_papers(startId:str, endId:str):
 
     return paperList
 
+
 def test_func():
-    paperList = get_all_papers(START_ID, END_ID)
+    # paperList, metrics = apply_time_analysis('CrawlPaper')(get_all_papers)(START_ID, TEST_END_ID)
+    paperList, metrics = apply_RAM_analysis('CrawlPaper')(get_all_papers)(START_ID, TEST_END_ID)
     print()
-    # Print for checking
-    for i in range(5):
-        print(f'{paperList[i].entry_id} - {paperList[i].title}')
+    
+    for key, value in metrics.items():
+        print(f'{key}: {value}')
 
 
 
-# test_func()
+test_func()

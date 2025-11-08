@@ -1,7 +1,6 @@
 import time
 import psutil
 import threading
-from scraper import get_all_papers, START_ID, TEST_END_ID
 
 # ========== Analysis metrics ==========
 def get_total_papers(paperList):
@@ -70,17 +69,3 @@ def apply_RAM_analysis(fieldName):
             return result, metrics
         return wrapper
     return decorator
-
-
-result, metrics = apply_time_analysis('CrawlPaper')(get_all_papers)(START_ID, TEST_END_ID)
-
-if isinstance(result, tuple) and len(result) == 2:
-    paperList, *_ = result
-else:
-    paperList = result
-    
-for i in range(5):
-    print(f'{paperList[i].entry_id} - {paperList[i].title}')
-
-for key, value in metrics.items():
-    print(f'{key}: {value}')
