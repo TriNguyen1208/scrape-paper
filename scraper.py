@@ -237,7 +237,7 @@ def get_all_papers(startId:str, endId:str):
     return paperList
 
 def test_func():
-    paperList = get_all_papers(START_ID, TEST_END_ID)
+    paperList = get_all_papers(START_ID, END_ID)
     print()
     # Print for checking
     for i in range(5):
