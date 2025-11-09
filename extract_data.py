@@ -2,6 +2,7 @@ import arxiv
 import requests
 import time
 from scraper import get_paper_from_id, paper_id_without_version, paperList
+import utils 
 
 def extract_metadata_one_paper(
     paper: arxiv.Result
@@ -68,8 +69,8 @@ def extract_reference_one_paper(
     }
     response = requests.get(url=url, params=params)
     while response.status_code == 429:
-        print("Refetch data after one second...")
-        time.sleep(1)
+        # print("Refetch data after one second...")
+        time.sleep(0.001)
         response = requests.get(url=url, params=params)
     data = response.json()
     references = data.get("references", [])
@@ -102,7 +103,11 @@ def extract_reference(
     for arxiv_id in paper_id_without_version:
         ref = extract_reference_one_paper(arxiv_id=arxiv_id)
         references[arxiv_id] = ref
+        print(arxiv_id, end = " | ")
     return references
 
-meta_data_paper = extract_metadata(paper_list=paperList)
+# meta_data_paper = extract_metadata(paper_list=paperList)
+# utils.save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
+
 meta_data_reference = extract_reference(paper_id_without_version=paper_id_without_version)
+utils.save_dict_to_json(meta_data_reference, save_path="Metadata.json")

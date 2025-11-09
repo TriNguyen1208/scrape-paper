@@ -268,5 +268,7 @@ def main_func():
     return paperList, paper_id_without_version
 
 
-
 paperList, paper_id_without_version = main_func()
+# paperList = None
+# paper_id_without_version = None
+
