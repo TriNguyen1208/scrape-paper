@@ -207,55 +207,15 @@ def get_all_papers(startId:str, endId:str):
         except Exception as e:
             print(f"[ERROR][get_all_papers][] Fetching batch {i // BATCH_SIZE + 1}: {e}")
 
-    return paperList
+    return paperList, paperIdList
 
-def get_all_id_without_version(
-    paper_list: list[arxiv.Result]
-) -> list[str]:
-    '''
-    A function to get all the id without distinguishing version.
 
-    Parameters
-    ----------
-    paper_list: list[arxiv.Result]
-        List of the paper
-    Return
-    ------
-    list of arxiv_id without version
-        a list contains id.
-    '''
-    paper_list_id = []
-    dist = {}
-    for paper in paper_list:
-        id = paper.entry_id.split('/')[-1][:-2]
-        if id not in dist:
-            paper_list_id.append(id)
-    return paper_list_id
-
-def get_paper_from_id(
-    arxiv_id_list: list[str]
-) -> list[arxiv.Result]:
-    '''
-    A function to paper from id.
-
-    Parameters
-    ----------
-    paper_list: list[arxiv.Result]
-        List of the paper
-    Return
-    ------
-    list of arxiv_id without version
-        a list contains id.
-    '''
-    paper = list(arxiv.Client().results(arxiv.Search(id_list=arxiv_id_list)))
-    return paper
 
 
 def main_func():
     startTime = time.time()
 
-    paperList = get_all_papers(START_ID, END_ID)
-    paper_id_without_version = get_all_id_without_version(paperList)
+    paperList, paperIdList = get_all_papers(START_ID, END_ID)
     duration = time.time() - startTime
 
     print('=' * 50)
@@ -265,8 +225,11 @@ def main_func():
     for i in range(5):
         print(f'{paperList[i].entry_id} - {paperList[i].title}')
 
-    return paperList, paper_id_without_version
+    return paperList, paperIdList
 
 
 
-paperList, paper_id_without_version = main_func()
+paperList, paperIdList = main_func()
+print(len(paperIdList))
+print(type(paperIdList[0]))
+print(paperIdList[0])
