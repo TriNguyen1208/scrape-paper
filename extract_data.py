@@ -1,6 +1,8 @@
 import arxiv
 import requests
 import time
+from scraper import paperIdList, paperList
+import utils 
 
 def get_paper_from_id(
     arxiv_id_list: list[str]
@@ -106,3 +108,9 @@ def extract_reference(
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
     meta_data = extract_metadata_list(paper_list=papers_list)
     return meta_data
+
+# meta_data_paper = extract_metadata(paper_list=paperList)
+# utils.save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
+
+meta_data_reference = extract_reference(paper_id_without_version=paperIdList)
+utils.save_dict_to_json(meta_data_reference, save_path="Metadata.json")

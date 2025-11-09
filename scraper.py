@@ -230,6 +230,3 @@ def main_func():
 
 
 paperList, paperIdList = main_func()
-print(len(paperIdList))
-print(type(paperIdList[0]))
-print(paperIdList[0])

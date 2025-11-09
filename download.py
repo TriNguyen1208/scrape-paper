@@ -37,7 +37,7 @@ def download_all_paper(
     for paper in paper_list:
         download_one_paper(paper=paper, save_dir=save_dir)
 
-download_all_paper([paperList[0]])
+# download_all_paper([paperList[0]])
 
 
 
