@@ -146,9 +146,3 @@ def extract_reference(
     for key, value in meta_data.items():
         value["semantic_scholar_id"] = arxiv_scholar_id[key]
     return meta_data
-
-# meta_data_paper = extract_metadata(paper_list=paperList)
-# utils.save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
-
-# meta_data_reference = extract_reference(paper_id_without_version=paperIdList)
-# utils.save_dict_to_json(meta_data_reference, save_path="Metadata.json")
