@@ -4,6 +4,7 @@ import arxiv
 # import scraper
 # import extract_data
 
+CLIENT = arxiv.Client()
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
     """
     Save all papers' metadata from paperList into a JSON file.
