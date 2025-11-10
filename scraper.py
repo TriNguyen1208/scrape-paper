@@ -318,7 +318,7 @@ def get_all_papers(start_id:str, end_id:str):
     paper_list = crawl_all_versions(paper_id_list, BATCH_SIZE)
 
     print()
-    return paper_list
+    return paper_list, paper_id_list
 
 
 def get_all_papers_v2(start_id:str, end_id:str):
@@ -346,7 +346,7 @@ def get_all_papers_v2(start_id:str, end_id:str):
 
     paper_id_list = filter_papers_in_id_range(paper_id_list, start_id, end_id)      # Filter papers to ensure within id range
 
-    paper_id_list = expand_to_all_versions(paper_id_list)                   # Get all the versions of each paper
+    paper_id_list = expand_to_all_versions(paper_id_list)                           # Get all the versions of each paper
 
     print()
     print('=' * 50)
@@ -354,12 +354,12 @@ def get_all_papers_v2(start_id:str, end_id:str):
     paper_list = crawl_all_versions_multithread(paper_id_list, BATCH_SIZE, 5)
 
     print()
-    return paper_list
+    return paper_list, paper_id_list
 
 def test_func():
     start_time = time.time()
     
-    paper_list = get_all_papers_v2(START_ID, TEST_END_ID)
+    paper_list, paper_id_list = get_all_papers_v2(START_ID, TEST_END_ID)
     
     end_time = time.time()
     print()
@@ -370,6 +370,11 @@ def test_func():
     # Print for checking
     for i in range(5):
         print(f'{paper_list[i].entry_id} - {paper_list[i].title}')
+        
+        
+    paper_id_list = sorted(list(set([get_id_from_arxiv_link(paper_id, False) for paper_id in paper_id_list])))
+    for i in range(5):
+        print(paper_id_list[i])
 
 
 
