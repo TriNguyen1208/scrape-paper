@@ -1,323 +1,457 @@
 {
-    "2304.04177": {
-        "title": "Evaluating spintronics-compatible implementations of Ising machines",
+    "2302.05543": {
+        "title": "Adding Conditional Control to Text-to-Image Diffusion Models",
         "authors": [
-            "Andrea Grimaldi",
-            "Luciano Mazza",
-            "Eleonora Raimondo",
-            "Pietro Tullo",
-            "Davi Rodrigues",
-            "Kerem Y. Camsari",
-            "Vincenza Crupi",
-            "Mario Carpentieri",
-            "Vito Puliafito",
-            "Giovanni Finocchio"
+            "Lvmin Zhang",
+            "Anyi Rao",
+            "Maneesh Agrawala"
         ],
-        "submission_date": "09/04/2023",
-        "publication_venue": "Phys. Rev. Applied 20, 024005 (2023)",
-        "semantic_scholar_id": "d329efbb60ed1057934a97ed1ba3fb6466202569"
+        "submission_date": "10/02/2023",
+        "semantic_scholar_id": "efbe97d20c4ffe356e8826c01dc550bacc405add"
     },
-    "2207.03404": {
-        "title": "The Quantum Approximate Optimization Algorithm performance with low entanglement and high circuit depth",
+    "2301.13826": {
+        "title": "Attend-and-Excite: Attention-Based Semantic Guidance for Text-to-Image Diffusion Models",
         "authors": [
-            "Rishi Sreedhar",
-            "Pontus Vikstål",
-            "Marika Svensson",
-            "Andreas Ask",
-            "Göran Johansson",
-            "Laura García-Álvarez"
+            "Hila Chefer",
+            "Yuval Alaluf",
+            "Yael Vinker",
+            "Lior Wolf",
+            "Daniel Cohen-Or"
         ],
-        "submission_date": "07/07/2022",
-        "semantic_scholar_id": "3c2a6795ec715df07f05c14f2a8f8adc37d510a8"
+        "submission_date": "31/01/2023",
+        "semantic_scholar_id": "c3c7464acb90049c5f520b0732dc7435ba3690bd"
     },
-    "2204.05852": {
-        "title": "Characterizing Error Mitigation by Symmetry Verification in QAOA",
+    "2301.07093": {
+        "title": "GLIGEN: Open-Set Grounded Text-to-Image Generation",
         "authors": [
-            "Ashish Kakkar",
-            "Jeffrey Larson",
-            "Alexey Galda",
-            "Ruslan Shaydulin"
+            "Yuheng Li",
+            "Haotian Liu",
+            "Qingyang Wu",
+            "Fangzhou Mu",
+            "Jianwei Yang",
+            "Jianfeng Gao",
+            "Chunyuan Li",
+            "Yong Jae Lee"
         ],
-        "submission_date": "12/04/2022",
-        "publication_venue": "2022 IEEE International Conference on Quantum Computing and\n  Engineering (QCE), Broomfield, CO, USA, 2022, pp. 635-645",
-        "semantic_scholar_id": "956b8c3def82c378cc8a2cd1b89b9fcb9da749d3"
+        "submission_date": "17/01/2023",
+        "semantic_scholar_id": "994a1ce6677b496bd3c0c63aceafc6556005e994"
     },
-    "2204.00276": {
-        "title": "Ising machines as hardware solvers of combinatorial optimization problems",
+    "2212.09611": {
+        "title": "Optimizing Prompts for Text-to-Image Generation",
         "authors": [
-            "Naeimeh Mohseni",
-            "Peter L. McMahon",
-            "Tim Byrnes"
+            "Yaru Hao",
+            "Zewen Chi",
+            "Li Dong",
+            "Furu Wei"
         ],
-        "submission_date": "01/04/2022",
-        "semantic_scholar_id": "628ddff1b6b8dcbb95e41a241e6f0343cc833eff"
+        "submission_date": "19/12/2022",
+        "semantic_scholar_id": "4d81c33b295c092016ac236cfd32020a5bb70b97"
     },
-    "2108.05288": {
-        "title": "Parameters Fixing Strategy for Quantum Approximate Optimization Algorithm",
+    "2212.05032": {
+        "title": "Training-Free Structured Diffusion Guidance for Compositional Text-to-Image Synthesis",
         "authors": [
-            "Xinwei Lee",
-            "Yoshiyuki Saito",
-            "Dongsheng Cai",
-            "Nobuyoshi Asai"
+            "Weixi Feng",
+            "Xuehai He",
+            "Tsu-Jui Fu",
+            "Varun Jampani",
+            "Arjun Akula",
+            "Pradyumna Narayana",
+            "Sugato Basu",
+            "Xin Eric Wang",
+            "William Yang Wang"
         ],
-        "submission_date": "11/08/2021",
-        "semantic_scholar_id": "bb1272539de596207dc4a0d5c0134c014cfcec1d"
+        "submission_date": "09/12/2022",
+        "semantic_scholar_id": "25de00096c45121a06668bc501f91adec5d0aff9"
     },
-    "2106.04410": {
-        "title": "Error Mitigation for Deep Quantum Optimization Circuits by Leveraging Problem Symmetries",
+    "2211.15518": {
+        "title": "ReCo: Region-Controlled Text-to-Image Generation",
         "authors": [
-            "Ruslan Shaydulin",
-            "Alexey Galda"
+            "Zhengyuan Yang",
+            "Jianfeng Wang",
+            "Zhe Gan",
+            "Linjie Li",
+            "Kevin Lin",
+            "Chenfei Wu",
+            "Nan Duan",
+            "Zicheng Liu",
+            "Ce Liu",
+            "Michael Zeng",
+            "Lijuan Wang"
         ],
-        "submission_date": "08/06/2021",
-        "publication_venue": "202021 IEEE International Conference on Quantum Computing and\n  Engineering (QCE), 2021, pp. 291-300",
-        "semantic_scholar_id": "0baf2ce8a7be46459647c622a1c3a869a49ea253"
+        "submission_date": "23/11/2022",
+        "semantic_scholar_id": "d388fad28e83fe335d03251196c940b575e90122"
     },
-    "2004.04197": {
-        "title": "Quantum Approximate Optimization of Non-Planar Graph Problems on a Planar Superconducting Processor",
+    "2211.11742": {
+        "title": "SceneComposer: Any-Level Semantic Image Synthesis",
         "authors": [
-            "Matthew P. Harrigan",
-            "Kevin J. Sung",
-            "Matthew Neeley",
-            "Kevin J. Satzinger",
-            "Frank Arute",
-            "Kunal Arya",
-            "Juan Atalaya",
-            "Joseph C. Bardin",
-            "Rami Barends",
-            "Sergio Boixo",
-            "Michael Broughton",
-            "Bob B. Buckley",
-            "David A. Buell",
-            "Brian Burkett",
-            "Nicholas Bushnell",
-            "Yu Chen",
-            "Zijun Chen",
-            "Ben Chiaro",
-            "Roberto Collins",
-            "William Courtney",
-            "Sean Demura",
-            "Andrew Dunsworth",
-            "Daniel Eppens",
-            "Austin Fowler",
-            "Brooks Foxen",
-            "Craig Gidney",
-            "Marissa Giustina",
-            "Rob Graff",
-            "Steve Habegger",
-            "Alan Ho",
-            "Sabrina Hong",
-            "Trent Huang",
-            "L. B. Ioffe",
-            "Sergei V. Isakov",
-            "Evan Jeffrey",
-            "Zhang Jiang",
-            "Cody Jones",
-            "Dvir Kafri",
-            "Kostyantyn Kechedzhi",
-            "Julian Kelly",
-            "Seon Kim",
-            "Paul V. Klimov",
-            "Alexander N. Korotkov",
-            "Fedor Kostritsa",
-            "David Landhuis",
-            "Pavel Laptev",
-            "Mike Lindmark",
-            "Martin Leib",
-            "Orion Martin",
-            "John M. Martinis",
-            "Jarrod R. McClean",
-            "Matt McEwen",
-            "Anthony Megrant",
-            "Xiao Mi",
-            "Masoud Mohseni",
-            "Wojciech Mruczkiewicz",
-            "Josh Mutus",
-            "Ofer Naaman",
-            "Charles Neill",
-            "Florian Neukart",
-            "Murphy Yuezhen Niu",
-            "Thomas E. O'Brien",
-            "Bryan O'Gorman",
-            "Eric Ostby",
-            "Andre Petukhov",
-            "Harald Putterman",
-            "Chris Quintana",
-            "Pedram Roushan",
-            "Nicholas C. Rubin",
-            "Daniel Sank",
-            "Andrea Skolik",
-            "Vadim Smelyanskiy",
-            "Doug Strain",
-            "Michael Streif",
-            "Marco Szalay",
-            "Amit Vainsencher",
-            "Theodore White",
-            "Z. Jamie Yao",
-            "Ping Yeh",
-            "Adam Zalcman",
-            "Leo Zhou",
-            "Hartmut Neven",
-            "Dave Bacon",
-            "Erik Lucero",
-            "Edward Farhi",
-            "Ryan Babbush"
+            "Yu Zeng",
+            "Zhe Lin",
+            "Jianming Zhang",
+            "Qing Liu",
+            "John Collomosse",
+            "Jason Kuen",
+            "Vishal M. Patel"
         ],
-        "submission_date": "08/04/2020",
-        "publication_venue": "Nature Physics 17, 332-336 (2021)",
-        "semantic_scholar_id": "91c10ab4c59843ecb405018b13f792719ce7009c"
+        "submission_date": "21/11/2022",
+        "semantic_scholar_id": "4cc5266166478592ec8539a2b940740b8d380cdd"
     },
-    "1910.07176": {
-        "title": "The promise of spintronics for unconventional computing",
+    "2211.15462": {
+        "title": "Investigating Prompt Engineering in Diffusion Models",
         "authors": [
-            "Giovanni Finocchio",
-            "Massimiliano Di Ventra",
-            "Kerem Y. Camsari",
-            "Karin Everschor-Sitte",
-            "Pedram Khalili Amiri",
-            "Zhongming Zeng"
+            "Sam Witteveen",
+            "Martin Andrews"
         ],
-        "submission_date": "16/10/2019",
-        "publication_venue": "Journal of Magnetism and Magnetic Materials, Volume 521, Part 1, 1\n  March 2021, 167506",
-        "semantic_scholar_id": "34cb9fcfde779ae2a3fd43a1a344c1514626d2b6"
+        "submission_date": "21/11/2022",
+        "semantic_scholar_id": "d2cfabde7383704e876373e9da9891714b0bd62b"
     },
-    "1907.02359": {
-        "title": "Benchmarking the Quantum Approximate Optimization Algorithm",
+    "2211.09800": {
+        "title": "InstructPix2Pix: Learning to Follow Image Editing Instructions",
         "authors": [
-            "Madita Willsch",
-            "Dennis Willsch",
-            "Fengping Jin",
-            "Hans De Raedt",
-            "Kristel Michielsen"
+            "Tim Brooks",
+            "Aleksander Holynski",
+            "Alexei A. Efros"
         ],
-        "submission_date": "04/07/2019",
-        "publication_venue": "Quantum Inf. Process. 19, 197 (2020)",
-        "semantic_scholar_id": "37fccfe53df7cb541cebc7764f6c9d77761b95b3"
+        "submission_date": "17/11/2022",
+        "semantic_scholar_id": "a2d2bbe4c542173662a444b33b76c66992697830"
     },
-    "1904.10211": {
-        "title": "Late Breaking Results: New Computational Results and Hardware Prototypes for Oscillator-based Ising Machines",
+    "2210.14896": {
+        "title": "DiffusionDB: A Large-scale Prompt Gallery Dataset for Text-to-Image Generative Models",
         "authors": [
-            "Tianshi Wang",
-            "Leon Wu",
-            "Jaijeet Roychowdhury"
+            "Zijie J. Wang",
+            "Evan Montoya",
+            "David Munechika",
+            "Haoyang Yang",
+            "Benjamin Hoover",
+            "Duen Horng Chau"
         ],
-        "submission_date": "23/04/2019",
-        "semantic_scholar_id": "dd6103c29084200216740f84e3cf423413a5d4ea"
+        "submission_date": "26/10/2022",
+        "semantic_scholar_id": "8fe6a16df99a87f79fc0cb0fbd1af44f79f7885f"
     },
-    "1903.07163": {
-        "title": "OIM: Oscillator-based Ising Machines for Solving Combinatorial Optimisation Problems",
+    "2208.01626": {
+        "title": "Prompt-to-Prompt Image Editing with Cross Attention Control",
         "authors": [
-            "Tianshi Wang",
-            "Jaijeet Roychowdhury"
+            "Amir Hertz",
+            "Ron Mokady",
+            "Jay Tenenbaum",
+            "Kfir Aberman",
+            "Yael Pritch",
+            "Daniel Cohen-Or"
         ],
-        "submission_date": "17/03/2019",
-        "semantic_scholar_id": "d70d0ecb5c41ce05d10fc0bdba13625c6f757de2"
+        "submission_date": "02/08/2022",
+        "semantic_scholar_id": "04e541391e8dce14d099d00fb2c21dbbd8afe87f"
     },
-    "1812.01041": {
-        "title": "Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices",
+    "2207.12598": {
+        "title": "Classifier-Free Diffusion Guidance",
         "authors": [
-            "Leo Zhou",
-            "Sheng-Tao Wang",
-            "Soonwon Choi",
-            "Hannes Pichler",
-            "Mikhail D. Lukin"
+            "Jonathan Ho",
+            "Tim Salimans"
         ],
-        "submission_date": "03/12/2018",
-        "publication_venue": "Phys. Rev. X 10, 021067 (2020)",
-        "semantic_scholar_id": "1dae572c4606b5d8ea9e1f88c9c16d287851d7a5"
+        "submission_date": "26/07/2022",
+        "semantic_scholar_id": "af9f365ed86614c800f082bd8eb14be76072ad16"
     },
-    "1805.05217": {
-        "title": "Experimental investigation of performance differences between Coherent Ising Machines and a quantum annealer",
+    "2206.01714": {
+        "title": "Compositional Visual Generation with Composable Diffusion Models",
         "authors": [
-            "Ryan Hamerly",
-            "Takahiro Inagaki",
-            "Peter L. McMahon",
-            "Davide Venturelli",
-            "Alireza Marandi",
-            "Tatsuhiro Onodera",
-            "Edwin Ng",
-            "Carsten Langrock",
-            "Kensuke Inaba",
-            "Toshimori Honjo",
-            "Koji Enbutsu",
-            "Takeshi Umeki",
-            "Ryoichi Kasahara",
-            "Shoko Utsunomiya",
-            "Satoshi Kako",
-            "Ken-ichi Kawarabayashi",
-            "Robert L. Byer",
-            "Martin M. Fejer",
-            "Hideo Mabuchi",
-            "Dirk Englund",
-            "Eleanor Rieffel",
-            "Hiroki Takesue",
-            "Yoshihisa Yamamoto"
+            "Nan Liu",
+            "Shuang Li",
+            "Yilun Du",
+            "Antonio Torralba",
+            "Joshua B. Tenenbaum"
         ],
-        "submission_date": "14/05/2018",
-        "publication_venue": "Sci. Adv. 5:eaau0823 (2019)",
-        "semantic_scholar_id": "79ab8cd207fdfd8c2db39ec6b1189df6420868ed"
+        "submission_date": "03/06/2022",
+        "semantic_scholar_id": "3ff7153fd6bd47d08084c7f50f8fd70026c126e7"
     },
-    "1802.06679": {
-        "title": "Further results on random cubic planar graphs",
+    "2205.11487": {
+        "title": "Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding",
         "authors": [
-            "Marc Noy",
-            "Clément Requilé",
-            "Juanjo Rué"
+            "Chitwan Saharia",
+            "William Chan",
+            "Saurabh Saxena",
+            "Lala Li",
+            "Jay Whang",
+            "Emily Denton",
+            "Seyed Kamyar Seyed Ghasemipour",
+            "Burcu Karagol Ayan",
+            "S. Sara Mahdavi",
+            "Rapha Gontijo Lopes",
+            "Tim Salimans",
+            "Jonathan Ho",
+            "David J Fleet",
+            "Mohammad Norouzi"
         ],
-        "submission_date": "19/02/2018",
-        "semantic_scholar_id": "08b44fd1aa50273fd770e1df75a1488f5805b4cc"
+        "submission_date": "23/05/2022",
+        "semantic_scholar_id": "9695824d7a01fad57ba9c01d7d76a519d78d65e7"
     },
-    "1501.07030": {
-        "title": "A coherent Ising machine for MAX-CUT problems : Performance evaluation against semidefinite programming relaxation and simulated annealing",
+    "2204.06125": {
+        "title": "Hierarchical Text-Conditional Image Generation with CLIP Latents",
         "authors": [
-            "Yoshitaka Haribara",
-            "Shoko Utsunomiya",
-            "Ken-ichi Kawarabayashi",
-            "Yoshihisa Yamamoto"
+            "Aditya Ramesh",
+            "Prafulla Dhariwal",
+            "Alex Nichol",
+            "Casey Chu",
+            "Mark Chen"
         ],
-        "submission_date": "28/01/2015",
-        "semantic_scholar_id": "7cbbe0a2b65f513f3964d68a8d5acaee8dda627c"
+        "submission_date": "13/04/2022",
+        "semantic_scholar_id": "c57293882b2561e1ba03017902df9fc2f289dea2"
     },
-    "1411.4028": {
-        "title": "A Quantum Approximate Optimization Algorithm",
+    "2201.12086": {
+        "title": "BLIP: Bootstrapping Language-Image Pre-training for Unified Vision-Language Understanding and Generation",
         "authors": [
-            "Edward Farhi",
-            "Jeffrey Goldstone",
-            "Sam Gutmann"
+            "Junnan Li",
+            "Dongxu Li",
+            "Caiming Xiong",
+            "Steven Hoi"
         ],
-        "submission_date": "14/11/2014",
-        "semantic_scholar_id": "ea238b034c2042fc0ce4efcff288725e5e74f462"
+        "submission_date": "28/01/2022",
+        "semantic_scholar_id": "a3b42a83669998f65df60d7c065a70d07ca95e99"
     },
-    "1307.7427": {
-        "title": "Theoretical Study of Spin-Torque Oscillator with Perpendicularly Magnetized Free Layer",
+    "2112.10752": {
+        "title": "High-Resolution Image Synthesis with Latent Diffusion Models",
         "authors": [
-            "Tomohiro Taniguchi",
-            "Hiroko Arai",
-            "Hitoshi Kubota",
-            "Hiroshi Imamura"
+            "Robin Rombach",
+            "Andreas Blattmann",
+            "Dominik Lorenz",
+            "Patrick Esser",
+            "Björn Ommer"
         ],
-        "submission_date": "29/07/2013",
-        "publication_venue": "IEEE Trans. Magn. 44, 1400404 (2014)",
-        "semantic_scholar_id": "d84697c6caabbc0fefc0596404406d946cb94e26"
+        "submission_date": "20/12/2021",
+        "semantic_scholar_id": "c10075b3746a9f3dd5811970e93c8ca3ad39b39d"
     },
-    "1302.5843": {
-        "title": "Ising formulations of many NP problems",
+    "2112.10741": {
+        "title": "GLIDE: Towards Photorealistic Image Generation and Editing with Text-Guided Diffusion Models",
         "authors": [
-            "Andrew Lucas"
+            "Alex Nichol",
+            "Prafulla Dhariwal",
+            "Aditya Ramesh",
+            "Pranav Shyam",
+            "Pamela Mishkin",
+            "Bob McGrew",
+            "Ilya Sutskever",
+            "Mark Chen"
         ],
-        "submission_date": "23/02/2013",
-        "publication_venue": "Frontiers in Physics 2, 5 (2014)",
-        "semantic_scholar_id": "d372de3869028723e91fca3136840759c63a1549"
+        "submission_date": "20/12/2021",
+        "semantic_scholar_id": "7002ae048e4b8c9133a55428441e8066070995cb"
     },
-    "1011.2788": {
-        "title": "Spin Torque Ferromagnetic Resonance Induced by the Spin Hall Effect",
+    "2109.06977": {
+        "title": "Design Guidelines for Prompt Engineering Text-to-Image Generative Models",
         "authors": [
-            "Luqiao Liu",
-            "Takahiro Moriyama",
-            "D. C. Ralph",
-            "R. A. Buhrman"
+            "Vivian Liu",
+            "Lydia B. Chilton"
         ],
-        "submission_date": "11/11/2010",
-        "semantic_scholar_id": "6508b7c058c9543786bf1889654f37d896c55dac"
+        "submission_date": "14/09/2021",
+        "semantic_scholar_id": "0968f1592f9401d72bf0d97e740496818c1a3135"
+    },
+    "2107.02423": {
+        "title": "Improving Text-to-Image Synthesis Using Contrastive Learning",
+        "authors": [
+            "Hui Ye",
+            "Xiulong Yang",
+            "Martin Takac",
+            "Rajshekhar Sunderraman",
+            "Shihao Ji"
+        ],
+        "submission_date": "06/07/2021",
+        "semantic_scholar_id": "e9e1be04853e73c8de76b919c78269eb5bc78668"
+    },
+    "2103.00020": {
+        "title": "Learning Transferable Visual Models From Natural Language Supervision",
+        "authors": [
+            "Alec Radford",
+            "Jong Wook Kim",
+            "Chris Hallacy",
+            "Aditya Ramesh",
+            "Gabriel Goh",
+            "Sandhini Agarwal",
+            "Girish Sastry",
+            "Amanda Askell",
+            "Pamela Mishkin",
+            "Jack Clark",
+            "Gretchen Krueger",
+            "Ilya Sutskever"
+        ],
+        "submission_date": "26/02/2021",
+        "semantic_scholar_id": "6f870f7f02a8c59c3e23f407f3ef00dd1dcf8fc4"
+    },
+    "2101.04702": {
+        "title": "Cross-Modal Contrastive Learning for Text-to-Image Generation",
+        "authors": [
+            "Han Zhang",
+            "Jing Yu Koh",
+            "Jason Baldridge",
+            "Honglak Lee",
+            "Yinfei Yang"
+        ],
+        "submission_date": "12/01/2021",
+        "semantic_scholar_id": "652032fbb744da4f279e8f30eef2323155878ac4"
+    },
+    "2008.05865": {
+        "title": "DF-GAN: A Simple and Effective Baseline for Text-to-Image Synthesis",
+        "authors": [
+            "Ming Tao",
+            "Hao Tang",
+            "Fei Wu",
+            "Xiao-Yuan Jing",
+            "Bing-Kun Bao",
+            "Changsheng Xu"
+        ],
+        "submission_date": "13/08/2020",
+        "semantic_scholar_id": "10f86e4979a0d625b1e0fc6a1a45613b8977d440"
+    },
+    "2002.07217": {
+        "title": "Decision-Making with Auto-Encoding Variational Bayes",
+        "authors": [
+            "Romain Lopez",
+            "Pierre Boyeau",
+            "Nir Yosef",
+            "Michael I. Jordan",
+            "Jeffrey Regier"
+        ],
+        "submission_date": "17/02/2020",
+        "publication_venue": "Advances in Neural Information Processing Systems 2020",
+        "semantic_scholar_id": "ef4f5a50837a7c1b3e87b9300ffc7ba00d461a0f"
+    },
+    "1910.10683": {
+        "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+        "authors": [
+            "Colin Raffel",
+            "Noam Shazeer",
+            "Adam Roberts",
+            "Katherine Lee",
+            "Sharan Narang",
+            "Michael Matena",
+            "Yanqi Zhou",
+            "Wei Li",
+            "Peter J. Liu"
+        ],
+        "submission_date": "23/10/2019",
+        "semantic_scholar_id": "6c4b76232bb72897685d19b3d264c6ee3005bc2b"
+    },
+    "1908.10084": {
+        "title": "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+        "authors": [
+            "Nils Reimers",
+            "Iryna Gurevych"
+        ],
+        "submission_date": "27/08/2019",
+        "semantic_scholar_id": "93d63ec754f29fa22572615320afe0521f7ec66d"
+    },
+    "1904.01310": {
+        "title": "DM-GAN: Dynamic Memory Generative Adversarial Networks for Text-to-Image Synthesis",
+        "authors": [
+            "Minfeng Zhu",
+            "Pingbo Pan",
+            "Wei Chen",
+            "Yi Yang"
+        ],
+        "submission_date": "02/04/2019",
+        "semantic_scholar_id": "ab995f96722969a0dfc6dc9139eef4c9b13c0524"
+    },
+    "1903.07291": {
+        "title": "Semantic Image Synthesis with Spatially-Adaptive Normalization",
+        "authors": [
+            "Taesung Park",
+            "Ming-Yu Liu",
+            "Ting-Chun Wang",
+            "Jun-Yan Zhu"
+        ],
+        "submission_date": "18/03/2019",
+        "publication_venue": "CVPR 2019",
+        "semantic_scholar_id": "a1a19aaddf57c0546357d890d9269092ba0afb26"
+    },
+    "1812.04948": {
+        "title": "A Style-Based Generator Architecture for Generative Adversarial Networks",
+        "authors": [
+            "Tero Karras",
+            "Samuli Laine",
+            "Timo Aila"
+        ],
+        "submission_date": "12/12/2018",
+        "semantic_scholar_id": "ceb2ebef0b41e31c1a21b28c2734123900c005e2"
+    },
+    "1807.06358": {
+        "title": "IntroVAE: Introspective Variational Autoencoders for Photographic Image Synthesis",
+        "authors": [
+            "Huaibo Huang",
+            "Zhihang Li",
+            "Ran He",
+            "Zhenan Sun",
+            "Tieniu Tan"
+        ],
+        "submission_date": "17/07/2018",
+        "semantic_scholar_id": "ce36b3448cfaf7b5e771fce8aa84475293c51f51"
+    },
+    "1711.10485": {
+        "title": "AttnGAN: Fine-Grained Text to Image Generation with Attentional Generative Adversarial Networks",
+        "authors": [
+            "Tao Xu",
+            "Pengchuan Zhang",
+            "Qiuyuan Huang",
+            "Han Zhang",
+            "Zhe Gan",
+            "Xiaolei Huang",
+            "Xiaodong He"
+        ],
+        "submission_date": "28/11/2017",
+        "semantic_scholar_id": "8b35c00edfa4edfd7a99d816e671023d2c000d55"
+    },
+    "1711.00937": {
+        "title": "Neural Discrete Representation Learning",
+        "authors": [
+            "Aaron van den Oord",
+            "Oriol Vinyals",
+            "Koray Kavukcuoglu"
+        ],
+        "submission_date": "02/11/2017",
+        "semantic_scholar_id": "f466157848d1a7772fb6d02cdac9a7a5e7ef982e"
+    },
+    "1711.11586": {
+        "title": "Toward Multimodal Image-to-Image Translation",
+        "authors": [
+            "Jun-Yan Zhu",
+            "Richard Zhang",
+            "Deepak Pathak",
+            "Trevor Darrell",
+            "Alexei A. Efros",
+            "Oliver Wang",
+            "Eli Shechtman"
+        ],
+        "submission_date": "30/11/2017",
+        "semantic_scholar_id": "4070bf3a68b70ab52de35a076a17941543001be2"
+    },
+    "1706.03762": {
+        "title": "Attention Is All You Need",
+        "authors": [
+            "Ashish Vaswani",
+            "Noam Shazeer",
+            "Niki Parmar",
+            "Jakob Uszkoreit",
+            "Llion Jones",
+            "Aidan N. Gomez",
+            "Lukasz Kaiser",
+            "Illia Polosukhin"
+        ],
+        "submission_date": "12/06/2017",
+        "semantic_scholar_id": "204e3073870fae3d05bcbc2f6a8e263d9b72e776"
+    },
+    "1611.07004": {
+        "title": "Image-to-Image Translation with Conditional Adversarial Networks",
+        "authors": [
+            "Phillip Isola",
+            "Jun-Yan Zhu",
+            "Tinghui Zhou",
+            "Alexei A. Efros"
+        ],
+        "submission_date": "21/11/2016",
+        "semantic_scholar_id": "8acbe90d5b852dadea7810345451a99608ee54c7"
+    },
+    "1505.04597": {
+        "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation",
+        "authors": [
+            "Olaf Ronneberger",
+            "Philipp Fischer",
+            "Thomas Brox"
+        ],
+        "submission_date": "18/05/2015",
+        "semantic_scholar_id": "6364fdaa0a0eccd823a779fcdd489173f938e91a"
     }
 }

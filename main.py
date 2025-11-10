@@ -16,14 +16,14 @@ def main():
     
     paper_dict = convert_paper_list_to_dictionary(paper_list)
     
-    for i in range(1):
+    for i in range(3):
         paper_id = paper_dict[i]['id']
         versions = paper_dict[i]['versions']
         
         meta_data_reference = extract_reference(paper_id)
         save_dict_to_json(meta_data_reference, save_path="Metadata.json")
-        
-        meta_data_paper = extract_metadata(versions)
+
+        meta_data_paper = extract_metadata(paper_id, versions)
         save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
         
         download_all_paper(versions)

@@ -22,36 +22,10 @@ def get_paper_from_id(
     paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
     return paper
 
-def extract_metadata_one_paper(
-    paper: arxiv.Result
-) -> object:
-    '''
-    A helper function to extract metadata of one paper
-
-    Parameters
-    ----------
-    paper: arxiv.Result
-       one paper
-    Return
-        object containing metadata
-    ------
-    '''
-    authors = [author.name for author in paper.authors]
-    submission_date = paper.published.strftime("%d/%m/%Y")
-    updated_date = paper.updated.strftime("%d/%m/%Y")
-    result = {
-        "title": paper.title,
-        "authors": authors,
-        "submission_date": submission_date,
-        "updated_date": updated_date    
-    }
-    if paper.journal_ref is not None:
-        result["publication_venue"] = paper.journal_ref
-    return result
-        
-
+    
 def extract_metadata(
-    paper_list: list[arxiv.Result],
+    paper_id: str,
+    paper_list_version: list[arxiv.Result],
 ) -> dict:
     '''
     A function to extract metadata of all papers
@@ -64,10 +38,20 @@ def extract_metadata(
         object containing all data.
     ------
     '''
-    metadata = {}
-    for paper in paper_list:
-        paper_id = get_id_from_arxiv_link(paper.entry_id)
-        metadata[paper_id] = extract_metadata_one_paper(paper)
+    
+    authors = [author.name for author in paper_list_version[0].authors]
+    submission_date = paper_list_version[0].published.strftime("%d/%m/%Y")
+    updated_date = [paper.updated.strftime("%d/%m/%Y") for paper in paper_list_version]
+
+    metadata = {
+        "paper_id": paper_id,
+        "title": paper_list_version[0].title,
+        "authors": authors,
+        "submission_date": submission_date,
+        "updated_date": updated_date    
+    }
+    if paper_list_version[0].journal_ref is not None:
+        metadata["publication_venue"] = paper_list_version[0].journal_ref
     return metadata
 
 def extract_metadata_reference(
@@ -86,8 +70,6 @@ def extract_metadata_reference(
     '''
     authors = [author.name for author in paper.authors]
     submission_date = paper.published.strftime("%d/%m/%Y")
-    # revised_dates = [v['date'].strftime("%d/%m/%Y") for v in paper.versions]
-    # TODO: cái revised này phải coi lại, thêm cái sematic
     result = {
         "title": paper.title,
         "authors": authors,

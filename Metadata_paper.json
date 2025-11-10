@@ -1,24 +1,15 @@
 {
-    "2306.14528v1": {
-        "title": "Superior Performance of Phase Binarized Oscillators (PBOs) Compared to Quantum Approximation Optimization Algorithm (QAOA) for Ising Computing (Max-Cut Problem)",
-        "authors": [
-            "Sanyam Singhal",
-            "Debanjan Bhowmik"
-        ],
-        "submission_date": "26/06/2023",
-        "updated_date": "26/06/2023"
-    },
-    "2306.14528v2": {
-        "title": "Phase-Binarized Spintronic Oscillators for Combinatorial Optimization, and Comparison with Alternative Classical and Quantum Methods",
-        "authors": [
-            "Neha Garg",
-            "Sanyam Singhal",
-            "Nakul Aggarwal",
-            "Aniket Sadashiva",
-            "Pranaba K. Muduli",
-            "Debanjan Bhowmik"
-        ],
-        "submission_date": "26/06/2023",
-        "updated_date": "06/11/2023"
-    }
+    "title": "A-STAR: Test-time Attention Segregation and Retention for Text-to-image Synthesis",
+    "authors": [
+        "Aishwarya Agarwal",
+        "Srikrishna Karanam",
+        "K J Joseph",
+        "Apoorv Saxena",
+        "Koustava Goswami",
+        "Balaji Vasan Srinivasan"
+    ],
+    "submission_date": "26/06/2023",
+    "updated_date": [
+        "26/06/2023"
+    ]
 }
