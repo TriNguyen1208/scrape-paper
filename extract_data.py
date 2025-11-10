@@ -86,8 +86,6 @@ def extract_metadata_reference(
     '''
     authors = [author.name for author in paper.authors]
     submission_date = paper.published.strftime("%d/%m/%Y")
-    # revised_dates = [v['date'].strftime("%d/%m/%Y") for v in paper.versions]
-    # TODO: cái revised này phải coi lại, thêm cái sematic
     result = {
         "title": paper.title,
         "authors": authors,

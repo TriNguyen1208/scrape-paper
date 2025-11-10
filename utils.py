@@ -111,8 +111,30 @@ def display_progress(current_value, total_value, display_text, length=50):
     displayBar = '█' * int(percent * length) + '-' * (length - int(percent * length))
     print(f'{display_text}: |{displayBar}| {percent * 100:.2f}%', end='\r')
 
-def convert_paper_list_to_dictionary(paper_list):
+def convert_paper_list_to_dictionary(paper_list:list[arxiv.Result])->list[dict]:
     '''
+    A function to group papers'id 
+    
+    Parameter
+    ---------
+    paper_list: list of arxiv.Result
+        a list contains papers in arxiv.Result type
+        
+    Return
+    ------
+    list of dictionary
+
+        Example format:
+        [
+            {
+                'id': '2306.14505',
+                'versions': list[arxiv.Result]
+            },
+            {
+                'id': '2306.14528',
+                'versions': list[arxiv.Result]
+            }
+        ]
     '''
     
     paper_dict = defaultdict(list)
