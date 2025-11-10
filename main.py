@@ -26,11 +26,7 @@ def main():
 
         meta_data_paper = extract_metadata(paper_id, versions)
         save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
-        
-        
-        # TODO: Cần một hàm xử lí metadata ở đây
-        # Implement here
-        
+
         # Hàm này chỉ mới download, chưa extract. Có thể sử dụng hàm của Bảo đã implement
         for paper_version in versions:
             submission.save_one_tex(paper_version, report_size=True)
