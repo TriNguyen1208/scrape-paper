@@ -159,6 +159,7 @@ def save_all(save_root="./Save", start_id=TEMP_START_ID, end_id=TEMP_END_ID, max
     Save all neccessary files for a paper for submission, including: tex folder, metadata.json, reference.json
     '''
     paper_idvs = get_all_paper_idvs(max_count=max_count)
+    
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures_tex = {executor.submit(save_one_tex, pid): pid for pid in paper_idvs}
     
@@ -169,8 +170,8 @@ def save_all(save_root="./Save", start_id=TEMP_START_ID, end_id=TEMP_END_ID, max
     with open("json_files/paper_size", "w", encoding="utf-8") as f:
         json.dump(paper_size, f, ensure_ascii=False, indent=4)
 
-if __name__ == "__main__":
-    start_time = time.time()
-    save_all(max_count=10)
-    print("Time: ", time.time() - start_time)
+# if __name__ == "__main__":
+#     start_time = time.time()
+#     save_all(max_count=10)
+#     print("Time: ", time.time() - start_time)
     

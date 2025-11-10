@@ -1,8 +1,7 @@
 import os
 import json
 import arxiv
-# import scraper
-# import extract_data
+from collections import defaultdict
 
 CLIENT = arxiv.Client()
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
@@ -67,6 +66,66 @@ def get_folder_size(folder_path: str) -> int:
             if os.path.isfile(file_path):
                 total_size += os.path.getsize(file_path)
     return total_size
+
+def get_id_from_arxiv_link(url, with_version=True):
+    '''
+    A function to get id from arxiv url
+
+    Parameter
+    ---------
+    url: str
+        An arxiv url (format: 'http://arxiv.org/abs/xxxx.xxxxxvx', x is a digit from 0 to 9)
+
+    Return
+    ------
+    str
+        paper's ID with/without version (format: 'xxxx.xxxxxvx' or 'xxxx.xxxxx', x is a digit from 0 to 9)
+    '''
+    if '/abs/' in url:
+        full_id = url.split('/abs/')[1]
+    else:
+        full_id = url
+
+    if with_version:
+        return full_id
+    else:
+        arxiv_id = full_id.split('v')[0]
+        return arxiv_id
+
+def display_progress(current_value, total_value, display_text, length=50):
+    '''
+    A function to display progress bar
+    
+    Parameters
+    ----------
+    current_value: float
+        current value
+    total_value: float
+        total value
+    display_text: str
+        the bar's title
+    length: int
+        the length of the bar
+    '''
+    percent = (current_value / total_value)
+    displayBar = '█' * int(percent * length) + '-' * (length - int(percent * length))
+    print(f'{display_text}: |{displayBar}| {percent * 100:.2f}%', end='\r')
+
+def convert_paper_list_to_dictionary(paper_list):
+    '''
+    '''
+    
+    paper_dict = defaultdict(list)
+    
+    for paper in paper_list:
+        paper_id = get_id_from_arxiv_link(paper.entry_id, False)
+        paper_dict[paper_id].append(paper)
+        
+    format_paper_dict = [{'id': paper_id, 'versions': versions} for paper_id, versions in paper_dict.items()]
+        
+    return format_paper_dict
+        
+        
 
 # save_paperlist_to_json(scraper.paperList)
 # save_dict_to_json(extract_data.meta_data_paper, save_path="json_files/metadata_src.json")

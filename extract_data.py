@@ -2,7 +2,7 @@ import arxiv
 import requests
 import time
 # from scraper import paperIdList, paperList
-from utils import CLIENT
+from utils import CLIENT, get_id_from_arxiv_link
 
 def get_paper_from_id(
     arxiv_id_list: list[str]
@@ -21,6 +21,54 @@ def get_paper_from_id(
     '''
     paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
     return paper
+
+def extract_metadata_one_paper(
+    paper: arxiv.Result
+) -> object:
+    '''
+    A helper function to extract metadata of one paper
+
+    Parameters
+    ----------
+    paper: arxiv.Result
+       one paper
+    Return
+        object containing metadata
+    ------
+    '''
+    authors = [author.name for author in paper.authors]
+    submission_date = paper.published.strftime("%d/%m/%Y")
+    updated_date = paper.updated.strftime("%d/%m/%Y")
+    result = {
+        "title": paper.title,
+        "authors": authors,
+        "submission_date": submission_date,
+        "updated_date": updated_date    
+    }
+    if paper.journal_ref is not None:
+        result["publication_venue"] = paper.journal_ref
+    return result
+        
+
+def extract_metadata(
+    paper_list: list[arxiv.Result],
+) -> dict:
+    '''
+    A function to extract metadata of all papers
+
+    Parameters
+    ----------
+    paper_list: list[arxiv.Result]
+       list of papers
+    Return
+        object containing all data.
+    ------
+    '''
+    metadata = {}
+    for paper in paper_list:
+        paper_id = get_id_from_arxiv_link(paper.entry_id)
+        metadata[paper_id] = extract_metadata_one_paper(paper)
+    return metadata
 
 def extract_metadata_reference(
     paper: arxiv.Result
@@ -102,6 +150,7 @@ def extract_reference(
     
     arxiv_id_ref_list = []
     arxiv_scholar_id = {}
+    
     for reference in references:
         external_id = reference.get("externalIds", {})
         if external_id is not None:
@@ -109,6 +158,7 @@ def extract_reference(
         if arxiv_id_ref is not None:
             arxiv_id_ref_list.append(arxiv_id_ref)
             arxiv_scholar_id[arxiv_id_ref] = reference.get("paperId")
+            
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
     meta_data = extract_metadata_reference_list(paper_list=papers_list)
     for key, value in meta_data.items():

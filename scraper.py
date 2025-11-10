@@ -1,13 +1,14 @@
 import arxiv
 from datetime import timedelta
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+
+from utils import get_id_from_arxiv_link, display_progress, CLIENT
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
 TEST_END_ID = '2307.00140'
 BATCH_SIZE = 200
-CLIENT = arxiv.Client()
 
 def get_daily_paper_ids(query, max_results=1000,
                   sort_by=arxiv.SortCriterion.SubmittedDate,
@@ -50,32 +51,6 @@ def get_daily_paper_ids(query, max_results=1000,
         return []
 
     return [get_id_from_arxiv_link(paper.entry_id, with_version=True) for paper in paper_list]
-
-
-def get_id_from_arxiv_link(url, with_version=True):
-    '''
-    A function to get id from arxiv url
-
-    Parameter
-    ---------
-    url: str
-        An arxiv url (format: 'http://arxiv.org/abs/xxxx.xxxxxvx', x is a digit from 0 to 9)
-
-    Return
-    ------
-    str
-        paper's ID with/without version (format: 'xxxx.xxxxxvx' or 'xxxx.xxxxx', x is a digit from 0 to 9)
-    '''
-    if '/abs/' in url:
-        full_id = url.split('/abs/')[1]
-    else:
-        full_id = url
-
-    if with_version:
-        return full_id
-    else:
-        arxiv_id = full_id.split('v')[0]
-        return arxiv_id
 
 
 def filter_papers_in_id_range(paper_id_list, start_id=None, end_id=None):
@@ -135,12 +110,14 @@ def get_remaining_versions_of_paper(arxiv_id):
     Parameter
     ---------
     arxiv_id: str
-        newest version's ID of a paper(format: 'xxxx.xxxxxvx', x is a digit from 0 to 9)
+        newest version's ID of a paper (format: 'xxxx.xxxxxvx', x is a digit from 0 to 9)
 
     Return
     ------
-    list of str
-        a list contains remaining versions'id of a paper (xxxx.xxxxxvx, x is a digit from 0 to 9)
+    dict
+        a dict has
+            key: a ID of a paper (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
+            value: a list contains remaining versions'id of a paper (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
     number_of_version = arxiv_id.split('v')[1]
     base_paper_id = arxiv_id.split('v')[0]
@@ -151,26 +128,6 @@ def get_remaining_versions_of_paper(arxiv_id):
         versions_id.append(base_paper_id + 'v' + str(version + 1))
 
     return versions_id
-
-
-def display_progress(current_value, total_value, display_text, length=50):
-    '''
-    A function to display progress bar
-    
-    Parameters
-    ----------
-    current_value: float
-        current value
-    total_value: float
-        total value
-    display_text: str
-        the bar's title
-    length: int
-        the length of the bar
-    '''
-    percent = (current_value / total_value)
-    displayBar = '█' * int(percent * length) + '-' * (length - int(percent * length))
-    print(f'{display_text}: |{displayBar}| {percent * 100:.2f}%', end='\r')
     
 
 def generate_date_range(start_date, end_date):
@@ -227,6 +184,7 @@ def expand_to_all_versions(paper_ids):
     expanded = []
     for paper_id in paper_ids:
         expanded.extend(get_remaining_versions_of_paper(paper_id))
+        
     return paper_ids + expanded
 
 def crawl_all_versions(paper_ids, batch_size):
@@ -318,7 +276,7 @@ def get_all_papers(start_id:str, end_id:str):
     paper_list = crawl_all_versions(paper_id_list, BATCH_SIZE)
 
     print()
-    return paper_list, paper_id_list
+    return paper_list, sorted(list(set([get_id_from_arxiv_link(paper_id, False) for paper_id in paper_id_list])))
 
 
 def get_all_papers_v2(start_id:str, end_id:str):
@@ -354,12 +312,12 @@ def get_all_papers_v2(start_id:str, end_id:str):
     paper_list = crawl_all_versions_multithread(paper_id_list, BATCH_SIZE, 5)
 
     print()
-    return paper_list, paper_id_list
+    return paper_list
 
 def test_func():
     start_time = time.time()
     
-    paper_list, paper_id_list = get_all_papers_v2(START_ID, TEST_END_ID)
+    paper_list = get_all_papers_v2(START_ID, TEST_END_ID)
     
     end_time = time.time()
     print()
@@ -370,11 +328,7 @@ def test_func():
     # Print for checking
     for i in range(5):
         print(f'{paper_list[i].entry_id} - {paper_list[i].title}')
-        
-        
-    paper_id_list = sorted(list(set([get_id_from_arxiv_link(paper_id, False) for paper_id in paper_id_list])))
-    for i in range(5):
-        print(paper_id_list[i])
+    
 
 
 

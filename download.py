@@ -1,6 +1,5 @@
 import arxiv
 import os
-from scraper import paperList
 
 def download_one_paper(
     paper: arxiv.Result, 
