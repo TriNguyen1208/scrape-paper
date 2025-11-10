@@ -18,7 +18,7 @@ def download_one_paper(
     os.makedirs(save_dir, exist_ok=True)
     paper.download_source(dirpath=save_dir, filename=f"{paper.entry_id.split('/')[-1]}.tar.gz")
 
-def download_all_paper(
+def download_papers(
     paper_list: list[arxiv.Result], 
     save_dir: str = "./tex"
 ):

@@ -209,5 +209,4 @@ marimo/_lsp/
 __marimo__/
 
 .vscode
-ds-env
 tex
