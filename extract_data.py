@@ -88,6 +88,10 @@ def extract_reference(
         "fields": "references.externalIds"
     }
     response = requests.get(url=url, params=params)
+    if response.status_code == 404:
+        print(f"Paper is not found in semantic scholar")
+        return
+    
     while response.status_code == 429:
         print("Refetch getting references after one second...")
         time.sleep(1)
