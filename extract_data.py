@@ -22,6 +22,53 @@ def get_paper_from_id(
     paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
     return paper
 
+def extract_metadata_one_paper(
+    paper: arxiv.Result
+) -> object:
+    '''
+    A helper function to extract metadata of one paper
+
+    Parameters
+    ----------
+    paper: arxiv.Result
+       one paper
+    Return
+        object containing metadata
+    ------
+    '''
+    authors = [author.name for author in paper.authors]
+    submission_date = paper.published.strftime("%d/%m/%Y")
+    updated_date = paper.updated.strftime("%d/%m/%Y")
+    result = {
+        "title": paper.title,
+        "authors": authors,
+        "submission_date": submission_date,
+        "updated_date": updated_date    
+    }
+    if paper.journal_ref is not None:
+        result["publication_venue"] = paper.journal_ref
+    return result
+        
+
+def extract_metadata(
+    paper_list: list[arxiv.Result],
+) -> dict:
+    '''
+    A function to extract metadata of all papers
+
+    Parameters
+    ----------
+    paper_list: list[arxiv.Result]
+       list of papers
+    Return
+        object containing all data.
+    ------
+    '''
+    metadata = {}
+    for paper in paper_list:
+        metadata[paper.entry_id.split('/')[-1]] = extract_metadata_one_paper(paper)
+    return metadata
+
 def extract_metadata_reference(
     paper: arxiv.Result
 ) -> object:
