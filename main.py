@@ -22,10 +22,10 @@ def main():
         
         # Trích metadata và ref, các giá trị trả về là một dictionary, có thể dùng 2 dòng lưu file dưới để xem format
         meta_data_reference = extract_reference(paper_id)
-        # save_dict_to_json(meta_data_reference, save_path="Metadata.json")
-        
-        meta_data_paper = extract_metadata(versions)
-        # save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
+        save_dict_to_json(meta_data_reference, save_path="Metadata.json")
+
+        meta_data_paper = extract_metadata(paper_id, versions)
+        save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
         
         
         # TODO: Cần một hàm xử lí metadata ở đây
