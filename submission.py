@@ -37,11 +37,12 @@ def remove_figures(folder_path: str):
                 os.remove(item_path)
 
 
-def save_one_tex(yyyymm_idv: str, save_root: str = "./Save"):
+def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bool = False):
     """
     Download all available versions of a paper given yyyymm-id (e.g., '2306-14525').
     """
     #Download the tar.gz 
+    yyyymm_idv = paper.entry_id.split('/')[-1]
     base_id, version = yyyymm_idv.split('v')
     base_id = base_id.replace("-", ".")
 
@@ -68,12 +69,15 @@ def save_one_tex(yyyymm_idv: str, save_root: str = "./Save"):
         tar.extractall(path=extract_dir)
 
     #Remove figures
-    paper_size_before = utils.get_folder_size(extract_dir)
-    remove_figures(extract_dir)
-    paper_size_after = utils.get_folder_size(extract_dir)
+    if (report_size):
+        paper_size_before = utils.get_folder_size(extract_dir)
+        remove_figures(extract_dir)
+        paper_size_after = utils.get_folder_size(extract_dir)
 
-    #Update paper_size
-    paper_size[yyyymm_idv] = {"before": paper_size_before, "after": paper_size_after}
+        #Update paper_size
+        paper_size[yyyymm_idv] = {"before": paper_size_before, "after": paper_size_after}
+    else:
+        remove_figures(extract_dir)
 
     os.remove(tar_path)
 
@@ -108,19 +112,28 @@ def transform_metadata(
         json.dump(result, f, ensure_ascii=False, indent=4)
 
 def save_one_metadata(
-    id:str, 
-    src_path="json_files/metadata_dest.json", 
+    id: str, 
+    metadata: dict, 
     save_root="./Save",
 ):
-    with open(src_path, "r", encoding="utf-8") as f:
-        metadata = json.load(f)
-    
     save_dir = os.path.join(save_root, id)
     os.makedirs(save_dir, exist_ok=True)
 
-    save_path = os.path.join(save_dir, id + ".json")
+    save_path = os.path.join(save_dir, "metadata.json")
     with open(save_path, "w", encoding="utf-8") as f:
-        json.dump(metadata[id], f, ensure_ascii=False, indent=4)
+        json.dump(metadata, f, ensure_ascii=False, indent=4)
+
+def save_one_reference(
+    id: str, 
+    reference: dict, 
+    save_root="./Save",
+):
+    save_dir = os.path.join(save_root, id)
+    os.makedirs(save_dir, exist_ok=True)
+
+    save_path = os.path.join(save_dir, id + "reference.json")
+    with open(save_path, "w", encoding="utf-8") as f:
+        json.dump(reference, f, ensure_ascii=False, indent=4)
 
 def save_all_metadata(
     src_path="json_files/metadata_dest.json", 

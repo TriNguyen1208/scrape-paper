@@ -1,0 +1,24 @@
+{
+    "2306.14525v1": {
+        "title": "ParameterNet: Parameters Are All You Need for Large-scale Visual Pretraining of Mobile Networks",
+        "authors": [
+            "Kai Han",
+            "Yunhe Wang",
+            "Jianyuan Guo",
+            "Enhua Wu"
+        ],
+        "submission_date": "26/06/2023",
+        "updated_date": "26/06/2023"
+    },
+    "2306.14525v2": {
+        "title": "ParameterNet: Parameters Are All You Need",
+        "authors": [
+            "Kai Han",
+            "Yunhe Wang",
+            "Jianyuan Guo",
+            "Enhua Wu"
+        ],
+        "submission_date": "26/06/2023",
+        "updated_date": "14/01/2024"
+    }
+}

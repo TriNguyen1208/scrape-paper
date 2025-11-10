@@ -2,6 +2,7 @@ from scraper import get_all_papers
 from utils import save_dict_to_json, convert_paper_list_to_dictionary
 from extract_data import extract_metadata, extract_reference
 from download import download_papers
+import submission
 
 import time
 
@@ -31,7 +32,11 @@ def main():
         # Implement here
         
         # Hàm này chỉ mới download, chưa extract. Có thể sử dụng hàm của Bảo đã implement
-        download_papers(versions)
+        for paper_version in versions:
+            submission.save_one_tex(paper_version, report_size=True)
+        
+        submission.save_one_metadata(id=paper_id, metadata=meta_data_paper)
+        submission.save_one_reference(id=paper_id, reference=meta_data_reference)
 
 
 if __name__ == "__main__":
