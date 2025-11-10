@@ -1,6 +1,7 @@
 import arxiv
 from datetime import timedelta
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
@@ -8,9 +9,9 @@ TEST_END_ID = '2307.00140'
 BATCH_SIZE = 200
 CLIENT = arxiv.Client()
 
-def get_daily_paper_ids(query, maxResults=1000,
-                  sortBy=arxiv.SortCriterion.SubmittedDate,
-                  sortOrder=arxiv.SortOrder.Ascending):
+def get_daily_paper_ids(query, max_results=1000,
+                  sort_by=arxiv.SortCriterion.SubmittedDate,
+                  sort_order=arxiv.SortOrder.Ascending):
 
     '''
     A function to crawl paper using arxiv API
@@ -19,11 +20,11 @@ def get_daily_paper_ids(query, maxResults=1000,
     ----------
     query: str
         Ensure the query is correctly formated from arxiv API
-    maxResults: int
+    max_results: int
         The maximum number of results in a single query
-    sortBy: arxiv.SortCriterion
+    sort_by: arxiv.SortCriterion
         The feature to sort
-    sortOrder: arxiv.SortOrder
+    sort_order: arxiv.SortOrder
         The sort order (Ascending, Descending)
 
     Return
@@ -34,12 +35,12 @@ def get_daily_paper_ids(query, maxResults=1000,
     
     try:
         search = arxiv.Search(query=query,
-                        max_results=maxResults,
-                        sort_by=sortBy,
-                        sort_order=sortOrder)
+                        max_results=max_results,
+                        sort_by=sort_by,
+                        sort_order=sort_order)
 
         
-        paperList = list(CLIENT.results(search))
+        paper_list = list(CLIENT.results(search))
 
     except Exception as e:
         if 'Page of results was unexpectedly empty' in str(e):
@@ -48,10 +49,10 @@ def get_daily_paper_ids(query, maxResults=1000,
             print(f'[EXCEPTION][get_daily_paper_ids]: {e}')
         return []
 
-    return [get_id_from_arxiv_link(paper.entry_id, withVersion=True) for paper in paperList]
+    return [get_id_from_arxiv_link(paper.entry_id, with_version=True) for paper in paper_list]
 
 
-def get_id_from_arxiv_link(url, withVersion=True):
+def get_id_from_arxiv_link(url, with_version=True):
     '''
     A function to get id from arxiv url
 
@@ -66,28 +67,28 @@ def get_id_from_arxiv_link(url, withVersion=True):
         paper's ID with/without version (format: 'xxxx.xxxxxvx' or 'xxxx.xxxxx', x is a digit from 0 to 9)
     '''
     if '/abs/' in url:
-        fullId = url.split('/abs/')[1]
+        full_id = url.split('/abs/')[1]
     else:
-        fullId = url
+        full_id = url
 
-    if withVersion:
-        return fullId
+    if with_version:
+        return full_id
     else:
-        arxivId = fullId.split('v')[0]
-        return arxivId
+        arxiv_id = full_id.split('v')[0]
+        return arxiv_id
 
 
-def filter_papers_in_id_range(paperIdList, startId=None, endId=None):
+def filter_papers_in_id_range(paper_id_list, start_id=None, end_id=None):
     '''
     A function to filter the list of papers in a given date range
 
     Parameters
     ----------
-    paperIdList: list of str
+    paper_id_list: list of str
         a list of papers' id to filter with format (xxxx.xxxxxvx, x is a digit from 0 to 9)
-    startId: str
+    start_id: str
         paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
-    endId: str
+    end_id: str
         paper's end ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
 
     Return
@@ -95,24 +96,24 @@ def filter_papers_in_id_range(paperIdList, startId=None, endId=None):
     list of str
         a list contains filtered papers'id with format (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
-    if startId is None:
-        return [paper for paper in paperIdList if get_id_from_arxiv_link(paper, withVersion=False) <= endId]
+    if start_id is None:
+        return [paper for paper in paper_id_list if get_id_from_arxiv_link(paper, with_version=False) <= end_id]
     
-    if endId is None:
-        return [paper for paper in paperIdList if startId <= get_id_from_arxiv_link(paper, withVersion=False)]
+    if end_id is None:
+        return [paper for paper in paper_id_list if start_id <= get_id_from_arxiv_link(paper, with_version=False)]
 
-    return [paper for paper in paperIdList if startId <= get_id_from_arxiv_link(paper, withVersion=False) <= endId]
+    return [paper for paper in paper_id_list if start_id <= get_id_from_arxiv_link(paper, with_version=False) <= end_id]
 
 
-def get_date_range_from_id(startId, endId):
+def get_date_range_from_id(start_id, end_id):
     '''
     A function to detect start date and end date from ids
 
     Parameters
     ----------
-    startId: str
+    start_id: str
         paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
-    endId: str
+    end_id: str
         paper's end ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
     
     Return
@@ -120,20 +121,20 @@ def get_date_range_from_id(startId, endId):
     tuple of datetime.datetime (format: '%Y-%m-%d %H:%M:%S)
         a tuple with start date and end date
     '''
-    search = arxiv.Search(id_list=[startId, endId])
+    search = arxiv.Search(id_list=[start_id, end_id])
     
-    paperList = list(CLIENT.results(search))
+    paper_list = list(CLIENT.results(search))
     
-    return(paperList[0].published, paperList[1].published)
+    return(paper_list[0].published, paper_list[1].published)
 
 
-def get_remaining_versions_of_paper(arxivId):
+def get_remaining_versions_of_paper(arxiv_id):
     '''
     A function to get all the versions of a paper's ID
 
     Parameter
     ---------
-    arxivId: str
+    arxiv_id: str
         newest version's ID of a paper(format: 'xxxx.xxxxxvx', x is a digit from 0 to 9)
 
     Return
@@ -141,46 +142,156 @@ def get_remaining_versions_of_paper(arxivId):
     list of str
         a list contains remaining versions'id of a paper (xxxx.xxxxxvx, x is a digit from 0 to 9)
     '''
-    numberOfVersion = arxivId.split('v')[1]
-    basePaperId = arxivId.split('v')[0]
+    number_of_version = arxiv_id.split('v')[1]
+    base_paper_id = arxiv_id.split('v')[0]
 
-    versionsId = []
+    versions_id = []
 
-    for version in range(int(numberOfVersion) - 1):
-        versionsId.append(basePaperId + 'v' + str(version + 1))
+    for version in range(int(number_of_version) - 1):
+        versions_id.append(base_paper_id + 'v' + str(version + 1))
 
-    return versionsId
+    return versions_id
 
 
-def display_progress(currentValue, totalValue, displayText, numBars=50):
+def display_progress(current_value, total_value, display_text, length=50):
     '''
     A function to display progress bar
     
     Parameters
     ----------
-    currentValue: float
+    current_value: float
         current value
-    totalValue: float
+    total_value: float
         total value
-    displayText: str
+    display_text: str
         the bar's title
-    numBars: int
+    length: int
         the length of the bar
     '''
-    percent = (currentValue / totalValue)
-    displayBar = '█' * int(percent * numBars) + '-' * (numBars - int(percent * numBars))
-    print(f'{displayText}: |{displayBar}| {percent * 100:.2f}%', end='\r')
+    percent = (current_value / total_value)
+    displayBar = '█' * int(percent * length) + '-' * (length - int(percent * length))
+    print(f'{display_text}: |{displayBar}| {percent * 100:.2f}%', end='\r')
     
 
-def get_all_papers(startId:str, endId:str):
+def generate_date_range(start_date, end_date):
+    date = []
+    for n in range((end_date - start_date).days + 1):
+        date.append(start_date + timedelta(n))
+        
+    return date
+    
+def crawl_daily_papers(date):
+    fmt_date = date.strftime('%Y%m%d')
+    query = f'all AND submittedDate:[{fmt_date}0000 TO {fmt_date}2359]'
+
+    daily_paper_ids = get_daily_paper_ids(query=query)
+    
+    return daily_paper_ids
+
+def crawl_all_daily_papers(start_date, end_date):
+    paper_ids = []
+    total_days = (end_date - start_date).days + 1
+    
+    for i, date in enumerate(generate_date_range(start_date, end_date)):
+        daily_paper_ids = crawl_daily_papers(date)
+        time.sleep(1) # small delay to avoid server overload
+        
+        display_progress(i + 1, total_days, 'Get papers')
+
+        paper_ids.extend(daily_paper_ids)
+        
+    return paper_ids
+
+def crawl_all_daily_papers_multithread(start_date, end_date, max_workers=5):
+    paper_ids = []
+    total_days = (end_date - start_date).days + 1
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(crawl_daily_papers, date) for date in generate_date_range(start_date, end_date)]
+        
+        completed = 0
+        
+        for future in as_completed(futures):
+            result = future.result()
+            completed += 1
+            
+            if result:
+                paper_ids.extend(result)
+                
+            display_progress(completed, total_days, "Get daily papers")
+        
+    return sorted(paper_ids)
+    
+def expand_to_all_versions(paper_ids):
+    """Get all version IDs for each paper."""
+    expanded = []
+    for paper_id in paper_ids:
+        expanded.extend(get_remaining_versions_of_paper(paper_id))
+    return paper_ids + expanded
+
+def crawl_all_versions(paper_ids, batch_size):
+    paper_list = []
+    
+    for i in range(0, len(paper_ids), batch_size):
+        display_progress(int((i + 1) / batch_size) + 1, int(len(paper_ids) / batch_size) + 1, 'Get all versions')
+        batch = paper_ids[i:i + batch_size]
+        search = arxiv.Search(id_list=batch)
+        try:
+            paper_list.extend(list(CLIENT.results(search)))
+            time.sleep(1) # small delay to avoid server overload
+        except Exception as e:
+            print(f"[ERROR][get_all_papers][] Fetching batch {int((i + 1) / batch_size) + 1}: {e}")
+            
+    return paper_list
+            
+
+def fetch_id_batches(batch):
+    try:
+        search = arxiv.Search(id_list=batch)
+        result = (list(CLIENT.results(search)))
+        time.sleep(1) # small delay to avoid server overload
+        
+        return result
+    except Exception as e:
+        print(f"[ERROR][fetch_id_batches]: {e}")
+
+
+def crawl_all_versions_multithread(paper_ids, batch_size, max_workers=5):
+    paper_id_batches = [paper_ids[i:i + batch_size] for i in range(0, len(paper_ids), batch_size)]
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # results = executor.map(fetch_id_batches, paper_id_batches)
+        futures = [executor.submit(fetch_id_batches, batch) for batch in paper_id_batches]
+        
+        paper_list = []
+        completed = 0
+        
+        for future in as_completed(futures):
+            completed += 1
+            result = future.result()
+            
+            if result:
+                paper_list.extend(result)
+            
+            display_progress(completed, len(paper_id_batches), 'Get remaining versions')
+    # paper_list = []
+    # for batch in results:
+    #     if batch:
+    #         for paper in batch:
+    #             paper_list.append(paper)
+                
+    return sorted(paper_list, key=lambda d: d.entry_id)
+    
+
+def get_all_papers(start_id:str, end_id:str):
     '''
-    A function to crawl all the papers (all version from each paper) within startID and endID using arxiv API
+    A function to crawl all the papers (all version from each paper) within start_id and end_id using arxiv API
 
     Parameters
     ----------
-    startId: str
+    start_id: str
         paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
-    endId: str
+    end_id: str
         paper's end ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
 
     Returns
@@ -191,57 +302,74 @@ def get_all_papers(startId:str, endId:str):
     list of str
         a list contains crawled papers' id (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
     '''
-    (startDate, endDate) = get_date_range_from_id(startId, endId)
+    (start_date, end_date) = get_date_range_from_id(start_id, end_id)
     
-    def daterange(startDate, endDate):
-        for n in range((endDate - startDate).days + 1):
-            yield startDate + timedelta(n)
+    paper_id_list = crawl_all_daily_papers(start_date, end_date)                    # Get all daily papers within date range
 
-    paperIdList = []
-    paperList = []
-
-    for i, date in enumerate(daterange(startDate, endDate)):
-        fmtDate = date.strftime('%Y%m%d')
-        query = f'all AND submittedDate:[{fmtDate}0000 TO {fmtDate}2359]'
-
-        dailyPaperList = get_daily_paper_ids(query=query)
-        time.sleep(1) # small delay to avoid server overload
-        
-        display_progress(i + 1, (endDate - startDate).days + 1, 'Get papers')
-
-        paperIdList.extend(dailyPaperList)
-
-    paperIdList = filter_papers_in_id_range(paperIdList, startId, endId)
-
-    remainingVersionList = []
-    for paper in paperIdList:
-        remainingVersionList.extend(get_remaining_versions_of_paper(paper))
-
-    paperIdList.extend(remainingVersionList)
+    paper_id_list = filter_papers_in_id_range(paper_id_list, start_id, end_id)      # Filter papers to ensure within id range
+    
+    # lay ref
+    
+    paper_id_list = sorted(expand_to_all_versions(paper_id_list))                   # Get all the versions of each paper
 
     print()
     print('=' * 50)
 
-    paperIdList = sorted(paperIdList)
+    paper_list = crawl_all_versions(paper_id_list, BATCH_SIZE)
 
-    for i in range(0, len(paperIdList), BATCH_SIZE):
-        display_progress(int((i + 1) / BATCH_SIZE) + 1, int(len(paperIdList) / BATCH_SIZE) + 1, 'Get all versions')
-        batch = paperIdList[i:i + BATCH_SIZE]
-        search = arxiv.Search(id_list=batch)
-        try:
-            paperList.extend(list(CLIENT.results(search)))
-            time.sleep(1) # small delay to avoid server overload
-        except Exception as e:
-            print(f"[ERROR][get_all_papers][] Fetching batch {int((i + 1) / BATCH_SIZE) + 1}: {e}")
+    print()
+    return paper_list
 
-    return paperList
+
+def get_all_papers_v2(start_id:str, end_id:str):
+    '''
+    A function to crawl all the papers (all version from each paper) within start_id and end_id using arxiv API
+
+    Parameters
+    ----------
+    start_id: str
+        paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
+    end_id: str
+        paper's end ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
+
+    Returns
+    ------
+    list of arxiv.Result
+        a list contains crawled papers
+    
+    list of str
+        a list contains crawled papers' id (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
+    '''
+    (start_date, end_date) = get_date_range_from_id(start_id, end_id)
+    
+    paper_id_list = crawl_all_daily_papers_multithread(start_date, end_date)                    # Get all daily papers within date range
+
+    paper_id_list = filter_papers_in_id_range(paper_id_list, start_id, end_id)      # Filter papers to ensure within id range
+
+    paper_id_list = expand_to_all_versions(paper_id_list)                   # Get all the versions of each paper
+
+    print()
+    print('=' * 50)
+
+    paper_list = crawl_all_versions_multithread(paper_id_list, BATCH_SIZE, 5)
+
+    print()
+    return paper_list
 
 def test_func():
-    paperList = get_all_papers(START_ID, END_ID)
+    start_time = time.time()
+    
+    paper_list = get_all_papers_v2(START_ID, TEST_END_ID)
+    
+    end_time = time.time()
     print()
+    
+    print(f'Duration: {(end_time - start_time):.2f}s')
+    print(f'Number of papers: {len(paper_list)}')
+    
     # Print for checking
     for i in range(5):
-        print(f'{paperList[i].entry_id} - {paperList[i].title}')
+        print(f'{paper_list[i].entry_id} - {paper_list[i].title}')
 
 
 
