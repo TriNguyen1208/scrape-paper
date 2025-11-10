@@ -1,7 +1,7 @@
 import time
 import psutil
 import threading
-
+import os
 # ========== Analysis metrics ==========
 def get_total_papers(paperList):
     return {'totalPapers': len(paperList)}
@@ -65,6 +65,58 @@ def apply_RAM_analysis(fieldName):
             metrics = {
                 f'highestRamUsage{fieldName}': f'{highestRamUsage / (1024 * 1024):.3f} MB',
                 f'averageRamUsage{fieldName}': f'{averageRamUsage / (1024 * 1024):.3f} MB'
+            }
+            return result, metrics
+        return wrapper
+    return decorator
+
+
+def get_dir_size(path="."):
+    total_size = 0
+    for dirpath, _, file_names in os.walk(path):
+        for f in file_names:
+            fp = os.path.join(dirpath, f)
+            if os.path.isfile(fp):
+                total_size += os.path.getsize(fp)
+    return total_size
+
+
+def measure_disk_usage(
+    folder_path,
+    storage_track_list, 
+    stop_progress_flag, 
+    interval=1
+):
+    while not stop_progress_flag.is_set():
+        size = get_dir_size(folder_path)
+        storage_track_list.append(size)
+        time.sleep(interval)
+
+
+def apply_disk_analysis(field_name, folder_path='.'):
+    def decorator(func):
+        def wrapper(*arg, **kwargs):
+            storage_track_list = []
+            stop_progress_flag = threading.Event()
+
+            disk_thread = threading.Thread(
+                target=measure_disk_usage,
+                args=(folder_path, storage_track_list, stop_progress_flag)
+            )
+
+            disk_thread.start()
+
+            result = func(*arg, **kwargs)
+
+            stop_progress_flag.set()
+            disk_thread.join()
+
+            highest_disk_storage = max(storage_track_list) if storage_track_list else 0
+            final_disk_storage = storage_track_list[-1] if storage_track_list else 0
+
+            metrics = {
+                f'Highest disk usage {field_name}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
+                f'Final disk usage {field_name}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
             }
             return result, metrics
         return wrapper

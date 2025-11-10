@@ -1,0 +1,323 @@
+{
+    "2304.04177": {
+        "title": "Evaluating spintronics-compatible implementations of Ising machines",
+        "authors": [
+            "Andrea Grimaldi",
+            "Luciano Mazza",
+            "Eleonora Raimondo",
+            "Pietro Tullo",
+            "Davi Rodrigues",
+            "Kerem Y. Camsari",
+            "Vincenza Crupi",
+            "Mario Carpentieri",
+            "Vito Puliafito",
+            "Giovanni Finocchio"
+        ],
+        "submission_date": "09/04/2023",
+        "publication_venue": "Phys. Rev. Applied 20, 024005 (2023)",
+        "semantic_scholar_id": "d329efbb60ed1057934a97ed1ba3fb6466202569"
+    },
+    "2207.03404": {
+        "title": "The Quantum Approximate Optimization Algorithm performance with low entanglement and high circuit depth",
+        "authors": [
+            "Rishi Sreedhar",
+            "Pontus Vikstål",
+            "Marika Svensson",
+            "Andreas Ask",
+            "Göran Johansson",
+            "Laura García-Álvarez"
+        ],
+        "submission_date": "07/07/2022",
+        "semantic_scholar_id": "3c2a6795ec715df07f05c14f2a8f8adc37d510a8"
+    },
+    "2204.05852": {
+        "title": "Characterizing Error Mitigation by Symmetry Verification in QAOA",
+        "authors": [
+            "Ashish Kakkar",
+            "Jeffrey Larson",
+            "Alexey Galda",
+            "Ruslan Shaydulin"
+        ],
+        "submission_date": "12/04/2022",
+        "publication_venue": "2022 IEEE International Conference on Quantum Computing and\n  Engineering (QCE), Broomfield, CO, USA, 2022, pp. 635-645",
+        "semantic_scholar_id": "956b8c3def82c378cc8a2cd1b89b9fcb9da749d3"
+    },
+    "2204.00276": {
+        "title": "Ising machines as hardware solvers of combinatorial optimization problems",
+        "authors": [
+            "Naeimeh Mohseni",
+            "Peter L. McMahon",
+            "Tim Byrnes"
+        ],
+        "submission_date": "01/04/2022",
+        "semantic_scholar_id": "628ddff1b6b8dcbb95e41a241e6f0343cc833eff"
+    },
+    "2108.05288": {
+        "title": "Parameters Fixing Strategy for Quantum Approximate Optimization Algorithm",
+        "authors": [
+            "Xinwei Lee",
+            "Yoshiyuki Saito",
+            "Dongsheng Cai",
+            "Nobuyoshi Asai"
+        ],
+        "submission_date": "11/08/2021",
+        "semantic_scholar_id": "bb1272539de596207dc4a0d5c0134c014cfcec1d"
+    },
+    "2106.04410": {
+        "title": "Error Mitigation for Deep Quantum Optimization Circuits by Leveraging Problem Symmetries",
+        "authors": [
+            "Ruslan Shaydulin",
+            "Alexey Galda"
+        ],
+        "submission_date": "08/06/2021",
+        "publication_venue": "202021 IEEE International Conference on Quantum Computing and\n  Engineering (QCE), 2021, pp. 291-300",
+        "semantic_scholar_id": "0baf2ce8a7be46459647c622a1c3a869a49ea253"
+    },
+    "2004.04197": {
+        "title": "Quantum Approximate Optimization of Non-Planar Graph Problems on a Planar Superconducting Processor",
+        "authors": [
+            "Matthew P. Harrigan",
+            "Kevin J. Sung",
+            "Matthew Neeley",
+            "Kevin J. Satzinger",
+            "Frank Arute",
+            "Kunal Arya",
+            "Juan Atalaya",
+            "Joseph C. Bardin",
+            "Rami Barends",
+            "Sergio Boixo",
+            "Michael Broughton",
+            "Bob B. Buckley",
+            "David A. Buell",
+            "Brian Burkett",
+            "Nicholas Bushnell",
+            "Yu Chen",
+            "Zijun Chen",
+            "Ben Chiaro",
+            "Roberto Collins",
+            "William Courtney",
+            "Sean Demura",
+            "Andrew Dunsworth",
+            "Daniel Eppens",
+            "Austin Fowler",
+            "Brooks Foxen",
+            "Craig Gidney",
+            "Marissa Giustina",
+            "Rob Graff",
+            "Steve Habegger",
+            "Alan Ho",
+            "Sabrina Hong",
+            "Trent Huang",
+            "L. B. Ioffe",
+            "Sergei V. Isakov",
+            "Evan Jeffrey",
+            "Zhang Jiang",
+            "Cody Jones",
+            "Dvir Kafri",
+            "Kostyantyn Kechedzhi",
+            "Julian Kelly",
+            "Seon Kim",
+            "Paul V. Klimov",
+            "Alexander N. Korotkov",
+            "Fedor Kostritsa",
+            "David Landhuis",
+            "Pavel Laptev",
+            "Mike Lindmark",
+            "Martin Leib",
+            "Orion Martin",
+            "John M. Martinis",
+            "Jarrod R. McClean",
+            "Matt McEwen",
+            "Anthony Megrant",
+            "Xiao Mi",
+            "Masoud Mohseni",
+            "Wojciech Mruczkiewicz",
+            "Josh Mutus",
+            "Ofer Naaman",
+            "Charles Neill",
+            "Florian Neukart",
+            "Murphy Yuezhen Niu",
+            "Thomas E. O'Brien",
+            "Bryan O'Gorman",
+            "Eric Ostby",
+            "Andre Petukhov",
+            "Harald Putterman",
+            "Chris Quintana",
+            "Pedram Roushan",
+            "Nicholas C. Rubin",
+            "Daniel Sank",
+            "Andrea Skolik",
+            "Vadim Smelyanskiy",
+            "Doug Strain",
+            "Michael Streif",
+            "Marco Szalay",
+            "Amit Vainsencher",
+            "Theodore White",
+            "Z. Jamie Yao",
+            "Ping Yeh",
+            "Adam Zalcman",
+            "Leo Zhou",
+            "Hartmut Neven",
+            "Dave Bacon",
+            "Erik Lucero",
+            "Edward Farhi",
+            "Ryan Babbush"
+        ],
+        "submission_date": "08/04/2020",
+        "publication_venue": "Nature Physics 17, 332-336 (2021)",
+        "semantic_scholar_id": "91c10ab4c59843ecb405018b13f792719ce7009c"
+    },
+    "1910.07176": {
+        "title": "The promise of spintronics for unconventional computing",
+        "authors": [
+            "Giovanni Finocchio",
+            "Massimiliano Di Ventra",
+            "Kerem Y. Camsari",
+            "Karin Everschor-Sitte",
+            "Pedram Khalili Amiri",
+            "Zhongming Zeng"
+        ],
+        "submission_date": "16/10/2019",
+        "publication_venue": "Journal of Magnetism and Magnetic Materials, Volume 521, Part 1, 1\n  March 2021, 167506",
+        "semantic_scholar_id": "34cb9fcfde779ae2a3fd43a1a344c1514626d2b6"
+    },
+    "1907.02359": {
+        "title": "Benchmarking the Quantum Approximate Optimization Algorithm",
+        "authors": [
+            "Madita Willsch",
+            "Dennis Willsch",
+            "Fengping Jin",
+            "Hans De Raedt",
+            "Kristel Michielsen"
+        ],
+        "submission_date": "04/07/2019",
+        "publication_venue": "Quantum Inf. Process. 19, 197 (2020)",
+        "semantic_scholar_id": "37fccfe53df7cb541cebc7764f6c9d77761b95b3"
+    },
+    "1904.10211": {
+        "title": "Late Breaking Results: New Computational Results and Hardware Prototypes for Oscillator-based Ising Machines",
+        "authors": [
+            "Tianshi Wang",
+            "Leon Wu",
+            "Jaijeet Roychowdhury"
+        ],
+        "submission_date": "23/04/2019",
+        "semantic_scholar_id": "dd6103c29084200216740f84e3cf423413a5d4ea"
+    },
+    "1903.07163": {
+        "title": "OIM: Oscillator-based Ising Machines for Solving Combinatorial Optimisation Problems",
+        "authors": [
+            "Tianshi Wang",
+            "Jaijeet Roychowdhury"
+        ],
+        "submission_date": "17/03/2019",
+        "semantic_scholar_id": "d70d0ecb5c41ce05d10fc0bdba13625c6f757de2"
+    },
+    "1812.01041": {
+        "title": "Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation on Near-Term Devices",
+        "authors": [
+            "Leo Zhou",
+            "Sheng-Tao Wang",
+            "Soonwon Choi",
+            "Hannes Pichler",
+            "Mikhail D. Lukin"
+        ],
+        "submission_date": "03/12/2018",
+        "publication_venue": "Phys. Rev. X 10, 021067 (2020)",
+        "semantic_scholar_id": "1dae572c4606b5d8ea9e1f88c9c16d287851d7a5"
+    },
+    "1805.05217": {
+        "title": "Experimental investigation of performance differences between Coherent Ising Machines and a quantum annealer",
+        "authors": [
+            "Ryan Hamerly",
+            "Takahiro Inagaki",
+            "Peter L. McMahon",
+            "Davide Venturelli",
+            "Alireza Marandi",
+            "Tatsuhiro Onodera",
+            "Edwin Ng",
+            "Carsten Langrock",
+            "Kensuke Inaba",
+            "Toshimori Honjo",
+            "Koji Enbutsu",
+            "Takeshi Umeki",
+            "Ryoichi Kasahara",
+            "Shoko Utsunomiya",
+            "Satoshi Kako",
+            "Ken-ichi Kawarabayashi",
+            "Robert L. Byer",
+            "Martin M. Fejer",
+            "Hideo Mabuchi",
+            "Dirk Englund",
+            "Eleanor Rieffel",
+            "Hiroki Takesue",
+            "Yoshihisa Yamamoto"
+        ],
+        "submission_date": "14/05/2018",
+        "publication_venue": "Sci. Adv. 5:eaau0823 (2019)",
+        "semantic_scholar_id": "79ab8cd207fdfd8c2db39ec6b1189df6420868ed"
+    },
+    "1802.06679": {
+        "title": "Further results on random cubic planar graphs",
+        "authors": [
+            "Marc Noy",
+            "Clément Requilé",
+            "Juanjo Rué"
+        ],
+        "submission_date": "19/02/2018",
+        "semantic_scholar_id": "08b44fd1aa50273fd770e1df75a1488f5805b4cc"
+    },
+    "1501.07030": {
+        "title": "A coherent Ising machine for MAX-CUT problems : Performance evaluation against semidefinite programming relaxation and simulated annealing",
+        "authors": [
+            "Yoshitaka Haribara",
+            "Shoko Utsunomiya",
+            "Ken-ichi Kawarabayashi",
+            "Yoshihisa Yamamoto"
+        ],
+        "submission_date": "28/01/2015",
+        "semantic_scholar_id": "7cbbe0a2b65f513f3964d68a8d5acaee8dda627c"
+    },
+    "1411.4028": {
+        "title": "A Quantum Approximate Optimization Algorithm",
+        "authors": [
+            "Edward Farhi",
+            "Jeffrey Goldstone",
+            "Sam Gutmann"
+        ],
+        "submission_date": "14/11/2014",
+        "semantic_scholar_id": "ea238b034c2042fc0ce4efcff288725e5e74f462"
+    },
+    "1307.7427": {
+        "title": "Theoretical Study of Spin-Torque Oscillator with Perpendicularly Magnetized Free Layer",
+        "authors": [
+            "Tomohiro Taniguchi",
+            "Hiroko Arai",
+            "Hitoshi Kubota",
+            "Hiroshi Imamura"
+        ],
+        "submission_date": "29/07/2013",
+        "publication_venue": "IEEE Trans. Magn. 44, 1400404 (2014)",
+        "semantic_scholar_id": "d84697c6caabbc0fefc0596404406d946cb94e26"
+    },
+    "1302.5843": {
+        "title": "Ising formulations of many NP problems",
+        "authors": [
+            "Andrew Lucas"
+        ],
+        "submission_date": "23/02/2013",
+        "publication_venue": "Frontiers in Physics 2, 5 (2014)",
+        "semantic_scholar_id": "d372de3869028723e91fca3136840759c63a1549"
+    },
+    "1011.2788": {
+        "title": "Spin Torque Ferromagnetic Resonance Induced by the Spin Hall Effect",
+        "authors": [
+            "Luqiao Liu",
+            "Takahiro Moriyama",
+            "D. C. Ralph",
+            "R. A. Buhrman"
+        ],
+        "submission_date": "11/11/2010",
+        "semantic_scholar_id": "6508b7c058c9543786bf1889654f37d896c55dac"
+    }
+}
