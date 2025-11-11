@@ -5,8 +5,7 @@ from collections import defaultdict
 import sys
 
 CLIENT = arxiv.Client()
-NUM_THREADS = 10
-RATE_LIMIT = 2
+RATE_LIMIT = 3.5
 
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
     """
@@ -155,9 +154,3 @@ def convert_paper_list_to_dictionary(paper_list:list[arxiv.Result])->list[dict]:
     format_paper_dict = [{'id': paper_id, 'versions': versions} for paper_id, versions in paper_dict.items()]
         
     return format_paper_dict
-        
-        
-
-# save_paperlist_to_json(scraper.paperList)
-# save_dict_to_json(extract_data.meta_data_paper, save_path="json_files/metadata_src.json")
-# save_dict_to_json(extract_data.meta_data_reference, save_path="reference_src.json")

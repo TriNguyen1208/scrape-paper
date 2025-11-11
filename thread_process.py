@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import sys
 import time
 
-NUM_DOWNLOAD_THREADS = 5
+NUM_DOWNLOAD_THREADS = 3
 NUM_EXTRACT_THREADS = 3
 NUM_SAVE_THREADS = 3
 
