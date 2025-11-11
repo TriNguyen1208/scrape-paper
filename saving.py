@@ -18,7 +18,7 @@ def remove_figures(folder_path: str):
     Return 
     ---------
     '''
-    allowed_exts = {'.tex', '.bib', '.bbl'}
+    allowed_exts = {'.tex', '.bib'}
 
     for item in os.listdir(folder_path):
         item_path = os.path.join(folder_path, item)
