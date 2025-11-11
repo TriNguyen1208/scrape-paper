@@ -3,6 +3,10 @@ import requests
 import time
 import sys
 from utils import CLIENT, RATE_LIMIT
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 def get_paper_from_id(
     arxiv_id_list: list[str]
@@ -116,8 +120,7 @@ def extract_reference(
     params = {
         "fields": "references.externalIds"
     }
-    
-    api_key = '5g1bToi1sR5mdcDgUWkxaa4XJVmIOnPn7q1fslOt'
+    api_key = os.getenv("API_KEY")
     headers = {"x-api-key": api_key}
     
     response = requests.get(url=url, params=params, headers=headers)
