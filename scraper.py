@@ -2,8 +2,9 @@ import arxiv
 from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
+import sys
 
-from utils import get_id_from_arxiv_link, display_progress, CLIENT
+from utils import get_id_from_arxiv_link, display_progress, CLIENT, RATE_LIMIT
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
@@ -44,7 +45,11 @@ def get_daily_paper_ids(query, max_results=1000,
         paper_list = list(CLIENT.results(search))
 
     except Exception as e:
+        sys.stdout.write('\n')
+        print(f'[EXCEPTION][get_daily_paper_ids]: {e}')
         return None
+
+    time.sleep(RATE_LIMIT)
 
     return [get_id_from_arxiv_link(paper.entry_id, with_version=True) for paper in paper_list]
 
@@ -200,7 +205,7 @@ def crawl_id_batches(batch:list[str]) -> list[arxiv.Result]:
     try:
         search = arxiv.Search(id_list=batch)
         result = (list(CLIENT.results(search)))
-        time.sleep(1) # small delay to avoid server overload
+        time.sleep(RATE_LIMIT) # small delay to avoid server overload
         
         return result
     except Exception as e:
@@ -245,7 +250,7 @@ def crawl_all_versions_multithread(paper_ids:list[str], batch_size:int, max_work
             
     return sorted(paper_list, key=lambda d: d.entry_id)
 
-def get_all_papers(start_id:str, end_id:str):
+def get_all_papers(start_id:str, end_id:str, num_threads:int=5):
     '''
     A function to crawl all the papers (all version from each paper) within start_id and end_id using arxiv API
 
@@ -263,16 +268,15 @@ def get_all_papers(start_id:str, end_id:str):
     '''
     (start_date, end_date) = get_date_range_from_id(start_id, end_id)
     
-    paper_id_list = crawl_all_daily_papers_multithread(start_date, end_date)        # Get all daily papers within date range
+    paper_id_list = crawl_all_daily_papers_multithread(start_date, end_date, num_threads)        # Get all daily papers within date range
 
     paper_id_list = filter_papers_in_id_range(paper_id_list, start_id, end_id)      # Filter papers to ensure within id range
 
     paper_id_list = expand_to_all_versions(paper_id_list)                           # Get all the versions of each paper
 
     print()
-    print('=' * 50)
 
-    paper_list = crawl_all_versions_multithread(paper_id_list, BATCH_SIZE, 5)
+    paper_list = crawl_all_versions_multithread(paper_id_list, BATCH_SIZE, num_threads)
 
     print()
     return paper_list

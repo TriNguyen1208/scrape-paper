@@ -2,8 +2,12 @@ import os
 import json
 import arxiv
 from collections import defaultdict
+import sys
 
 CLIENT = arxiv.Client()
+NUM_THREADS = 10
+RATE_LIMIT = 2
+
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
     """
     Save all papers' metadata from paperList into a JSON file.
@@ -92,7 +96,7 @@ def get_id_from_arxiv_link(url, with_version=True):
         arxiv_id = full_id.split('v')[0]
         return arxiv_id
 
-def display_progress(current_value, total_value, display_text, length=50):
+def display_progress(current_value, total_value, display_text, length=50, end=False):
     '''
     A function to display progress bar
     
@@ -107,9 +111,14 @@ def display_progress(current_value, total_value, display_text, length=50):
     length: int
         the length of the bar
     '''
-    percent = (current_value / total_value)
-    displayBar = '█' * int(percent * length) + '-' * (length - int(percent * length))
-    print(f'{display_text}: |{displayBar}| {percent * 100:.2f}%', end='\r')
+    percent = current_value / total_value
+    filled = int(length * percent)
+    bar = '█' * filled + '-' * (length - filled)
+    sys.stdout.write(f'\r{display_text}: |{bar}| {percent*100:6.2f}% ({current_value}/{total_value})')
+    sys.stdout.flush()
+    if end or current_value == total_value:
+        sys.stdout.write('\n')
+
 
 def convert_paper_list_to_dictionary(paper_list:list[arxiv.Result])->list[dict]:
     '''

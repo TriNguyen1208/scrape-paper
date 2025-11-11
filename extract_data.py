@@ -1,8 +1,8 @@
 import arxiv
 import requests
 import time
-# from scraper import paperIdList, paperList
-from utils import CLIENT, get_id_from_arxiv_link
+import sys
+from utils import CLIENT, RATE_LIMIT
 
 def get_paper_from_id(
     arxiv_id_list: list[str]
@@ -40,15 +40,14 @@ def extract_metadata(
     '''
     
     authors = [author.name for author in paper_list_version[0].authors]
-    submission_date = paper_list_version[0].published.strftime("%d/%m/%Y")
-    updated_date = [paper.updated.strftime("%d/%m/%Y") for paper in paper_list_version]
+    submission_date = paper_list_version[0].published.strftime("%Y-%m-%d")
+    revised_date = [paper.updated.strftime("%Y-%m-%d") for paper in paper_list_version]
 
     metadata = {
-        "paper_id": paper_id,
-        "title": paper_list_version[0].title,
+        "paper_title": paper_list_version[0].title,
         "authors": authors,
         "submission_date": submission_date,
-        "updated_date": updated_date    
+        "revised_date": revised_date    
     }
     if paper_list_version[0].journal_ref is not None:
         metadata["publication_venue"] = paper_list_version[0].journal_ref
@@ -69,9 +68,9 @@ def extract_metadata_reference(
     ------
     '''
     authors = [author.name for author in paper.authors]
-    submission_date = paper.published.strftime("%d/%m/%Y")
+    submission_date = paper.published.strftime("%Y-%m-%d")
     result = {
-        "title": paper.title,
+        "paper_title": paper.title,
         "authors": authors,
         "submission_date": submission_date,
     }
@@ -117,14 +116,20 @@ def extract_reference(
     params = {
         "fields": "references.externalIds"
     }
-    response = requests.get(url=url, params=params)
+    
+    api_key = '5g1bToi1sR5mdcDgUWkxaa4XJVmIOnPn7q1fslOt'
+    headers = {"x-api-key": api_key}
+    
+    response = requests.get(url=url, params=params, headers=headers)
     if response.status_code == 404:
-        print(f"Paper is not found in semantic scholar")
+        sys.stdout.write('\n')
+        print(f"Paper {arxiv_id} is not found in semantic scholar")
         return
     
     while response.status_code == 429:
-        print("Refetch getting references after one second...")
-        time.sleep(1)
+        sys.stdout.write('\n')
+        print(f"Refetch getting references after {RATE_LIMIT} second...")
+        time.sleep(RATE_LIMIT)
         response = requests.get(url=url, params=params)
 
     data = response.json()

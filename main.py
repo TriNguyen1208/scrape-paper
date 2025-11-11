@@ -1,42 +1,62 @@
 from scraper import get_all_papers
-from utils import save_dict_to_json, convert_paper_list_to_dictionary
-from extract_data import extract_metadata, extract_reference
-from download import download_papers
-import submission
+from utils import convert_paper_list_to_dictionary, display_progress, NUM_THREADS, RATE_LIMIT
+# from extract_data import extract_metadata, extract_reference
+# from saving import save_one_tex, save_one_metadata, save_one_reference
+from analysis import apply_disk_analysis, apply_time_analysis, apply_RAM_analysis
+from thread_process import execute_pipeline
 
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
 TEST_END_ID = '2307.00140'
 
-def main():
-    paper_list = get_all_papers(START_ID, TEST_END_ID)
-    paper_dict = convert_paper_list_to_dictionary(paper_list)
+# def execute_paper(paper_dict: dict) -> dict:
+#     paper_id = paper_dict['id']
+#     versions = paper_dict['versions']
+
+#     meta_data_paper = extract_metadata(paper_id, versions)
+#     meta_data_reference = extract_reference(paper_id)
+
+#     paper_sizes = {}
+#     for paper_version in versions:
+#         size = save_one_tex(paper_version, report_size=True)
+#         paper_sizes.update(size)
+
+#     save_one_metadata(id=paper_id, metadata=meta_data_paper)
+#     save_one_reference(id=paper_id, reference=meta_data_reference)
+
+#     time.sleep(RATE_LIMIT)
+#     return paper_sizes
+
+# def execute_paper_multithread(paper_dict_list, max_workers:int=5):
+#     total = len(paper_dict_list[:5])
+#     completed = 0
+#     paper_size = {}
     
-    temp_paper_dict = paper_dict[0:1]
+#     with ThreadPoolExecutor(max_workers=max_workers) as executor:
+#         futures = [executor.submit(execute_paper, paper) for paper in paper_dict_list[:5]]
+        
+#         for future in as_completed(futures):
+#             result = future.result()
+#             paper_size.update(result)
+#             completed += 1
+#             display_progress(completed, total, 'Downloading papers')
+            
+#     return paper_size
+
+def main(max_workers:int=5, withAnalysis:bool=False):
+    paper_list = get_all_papers(START_ID, TEST_END_ID, max_workers)
+    paper_dict_list = convert_paper_list_to_dictionary(paper_list)
     
-    for paper in temp_paper_dict:
-        paper_id = paper['id']
-        versions = paper['versions']
-        
-        # Trích metadata và ref, các giá trị trả về là một dictionary, có thể dùng 2 dòng lưu file dưới để xem format
-        meta_data_reference = extract_reference(paper_id)
-        save_dict_to_json(meta_data_reference, save_path="Metadata.json")
+    # paper_size = execute_paper_multithread(paper_dict_list, NUM_THREADS)
 
-        meta_data_paper = extract_metadata(paper_id, versions)
-        save_dict_to_json(meta_data_paper, save_path="Metadata_paper.json")
-
-        # Hàm này chỉ mới download, chưa extract. Có thể sử dụng hàm của Bảo đã implement
-        for paper_version in versions:
-            submission.save_one_tex(paper_version, report_size=True)
-        
-        submission.save_one_metadata(id=paper_id, metadata=meta_data_paper)
-        submission.save_one_reference(id=paper_id, reference=meta_data_reference)
-
+    paper_size = execute_pipeline(paper_dict_list[:5])
+    print(f'Total papers: {len(paper_size)}')
 
 if __name__ == "__main__":
     start_time = time.time()
-    main()
+    main(NUM_THREADS)
     print("Time: ", time.time() - start_time)
     print()
