@@ -70,7 +70,12 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
 import arxiv
 
 if __name__ == "__main__":
-    start_time = time.time()
-    main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_THREADS, withAnalysis=False)
-    print("Time: ", time.time() - start_time)
+    # start_time = time.time()
+    # main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_THREADS, withAnalysis=False)
+    # print("Time: ", time.time() - start_time)
+    
+    search = arxiv.Search(id_list=[START_ID])
+    paper_list = list(arxiv.Client().results(search))
+    
+    print(paper_list[0].entry_id)
     print()       
