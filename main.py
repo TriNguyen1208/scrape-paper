@@ -53,13 +53,15 @@ def main(max_workers:int=5, withAnalysis:bool=False):
     
     # paper_size = execute_paper_multithread(paper_dict_list, NUM_THREADS)
 
-    paper_size = execute_pipeline(paper_dict_list[:])
+    paper_size = execute_pipeline(paper_dict_list[:5])
     save_dict_to_json(paper_size, "paper_sizes.json")
 
-    print(f'Total papers: {len(paper_size)}')
+    # print(f'Total papers: {len(paper_size)}')
 
 if __name__ == "__main__":
     start_time = time.time()
     main(max_workers=NUM_THREADS)
     print("Time: ", time.time() - start_time)
+    
+    
     print()        

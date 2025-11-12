@@ -5,6 +5,7 @@ import json
 import tarfile
 import sys
 import time
+import requests
 from utils import get_id_from_arxiv_link, get_folder_size, ARXIV_RATE_LIMIT
 
 def remove_figures(folder_path: str):
@@ -30,6 +31,21 @@ def remove_figures(folder_path: str):
                 os.remove(item_path)  
 
 
+def download_zip_file(paper_id: str, save_dir:str):
+    url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
+    os.makedirs(save_dir, exist_ok=True)
+    dest_path = os.path.join(save_dir, f"{paper_id}.tar.gz")
+
+    response = requests.get(url, stream=True)
+    if response.status_code == 200:
+        with open(dest_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        return dest_path
+    else:
+        print(f"[Exception][download_zip_file]: Failed to download {paper_id}: HTTP {response.status_code}")
+        return None
+
 def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bool = False, retry_times:int=3):
     """
     Download all available versions of a paper given yyyymm-id (e.g., '2306-14525').
@@ -46,7 +62,8 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
 
     for attempt in range(1, retry_times + 1):
         try:
-            paper.download_source(dirpath=save_path, filename=f"{yyyymm_idv}.tar.gz")
+            download_zip_file(paper_id=yyyymm_idv, save_dir=save_path)
+            # paper.download_source(dirpath=save_path, filename=f"{yyyymm_idv}.tar.gz")
             break
 
         except Exception as e:
