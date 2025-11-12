@@ -24,7 +24,7 @@ def remove_figures(folder_path: str):
         item_path = os.path.join(folder_path, item)
 
         if os.path.isdir(item_path):
-            shutil.rmtree(item_path)
+            remove_figures(item_path)
         else:
             _, ext = os.path.splitext(item)
             if ext not in allowed_exts:
