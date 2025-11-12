@@ -8,8 +8,8 @@ from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 import sys
 
-NUM_DOWNLOAD_THREADS = 2
-NUM_EXTRACT_THREADS = 2
+NUM_DOWNLOAD_THREADS = 3
+NUM_EXTRACT_THREADS = 3
 NUM_SAVE_THREADS = 3
 
 q_extract = Queue()
@@ -70,7 +70,7 @@ def extracting_worker():
         try:
             meta_data_paper = extract_metadata(paper_id, versions)
             
-        except:
+        except Exception as e:
             meta_data_paper = None
             sys.stdout.write('\n')
             print(f'Cannot get metadata of {paper_id}')
@@ -79,10 +79,14 @@ def extracting_worker():
             try:
                 meta_data_reference = extract_reference(paper_id)
                     
-            except:
+            except Exception as e:
                 meta_data_reference = None
-                sys.stdout.write('\n')
-                print(f'Cannot get refs of {paper_id}')
+                if '400' in str(e):
+                    sys.stdout.write('\n')
+                    print(f'Refs of {paper_id} are not existed.')
+                else:
+                    sys.stdout.write('\n')
+                    print(f'Cannot get refs of {paper_id}')
                 
             time.sleep(SEMANTIC_RATE_LIMIT)
                 

@@ -2,7 +2,7 @@ import arxiv
 import requests
 import time
 import sys
-from utils import CLIENT, SEMANTIC_RATE_LIMIT
+from utils import CLIENT, SEMANTIC_RATE_LIMIT, ARXIV_RATE_LIMIT
 from dotenv import load_dotenv
 import os
 
@@ -24,6 +24,7 @@ def get_paper_from_id(
         a list contains id.
     '''
     paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
+    time.sleep(ARXIV_RATE_LIMIT)
     return paper
 
     
@@ -102,7 +103,8 @@ def extract_metadata_reference_list(
     return metadata
 
 def extract_reference(
-    arxiv_id: str
+    arxiv_id: str,
+    retry_times:int=3
 ) -> object:
     '''
     A helper function to extract reference containing metadata of one paper
@@ -124,16 +126,22 @@ def extract_reference(
     headers = {"x-api-key": api_key}
     
     response = requests.get(url=url, params=params, headers=headers)
-    if response.status_code == 404:
+    if response.status_code == 404 or response.status_code == 400:
         sys.stdout.write('\n')
         print(f"Paper {arxiv_id} is not found in semantic scholar")
         return
     
-    while response.status_code == 429:
-        sys.stdout.write('\n')
-        print(f"Refetch getting references after {SEMANTIC_RATE_LIMIT} second...")
-        time.sleep(SEMANTIC_RATE_LIMIT)
-        response = requests.get(url=url, params=params)
+    if response.status_code == 429:
+        for attempt in range(1, retry_times + 1):
+            sys.stdout.write('\n')
+            print(f"Refetch getting references after {SEMANTIC_RATE_LIMIT} second...")
+            response = requests.get(url=url, params=params)
+
+            if response.status_code != 429:
+                break
+            
+            time.sleep(SEMANTIC_RATE_LIMIT)
+        
 
     data = response.json()
     references = data.get("references", [])

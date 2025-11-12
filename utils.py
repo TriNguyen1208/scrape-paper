@@ -4,9 +4,9 @@ import arxiv
 from collections import defaultdict
 import sys
 
-CLIENT = arxiv.Client()
-ARXIV_RATE_LIMIT = 3.5
-SEMANTIC_RATE_LIMIT = 1
+CLIENT = arxiv.Client(delay_seconds=0.2)
+ARXIV_RATE_LIMIT = 3.2
+SEMANTIC_RATE_LIMIT = 1.2
 
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
     """
@@ -155,3 +155,56 @@ def convert_paper_list_to_dictionary(paper_list:list[arxiv.Result])->list[dict]:
     format_paper_dict = [{'id': paper_id, 'versions': versions} for paper_id, versions in paper_dict.items()]
         
     return format_paper_dict
+
+
+def is_id_existed(paper_id):
+    search = arxiv.Search(id_list=[paper_id])
+    client = arxiv.Client(page_size=1, delay_seconds=0.2)
+    try:
+        next(client.results(search))
+        return True
+    except StopIteration:
+        return False
+    except Exception:
+        # Network or parsing error — assume not found for safety
+        return False
+
+def form_paper_id(year, month, number):
+    return f'{year}{'0' * (2 - len(month))}{month}.{'0' * (5 - len(str(number)))}{number}'
+    
+def find_last_id(year, month):
+    low, high = 1, 1
+    while is_id_existed(form_paper_id(year, month, high)):
+        high *= 2
+        if high > 99999:
+            return 99999
+    low = high // 2
+    
+    while low + 1 < high:
+        mid = (low + high) // 2
+        if is_id_existed(form_paper_id(year, month, mid)):
+            low = mid
+        else:
+            high = mid
+    return form_paper_id(year, month, low)
+
+def find_first_id(year, month):
+    low, high = 1, 1
+    
+    while not is_id_existed(form_paper_id(year, month, high)):
+        high *= 2
+        if high > 99999:
+            return None
+        
+    while low + 1 < high:
+        mid = (low + high) // 2
+        
+        if is_id_existed(form_paper_id(year, month, mid)):
+            high = mid
+        else:
+            low = mid
+            
+    return form_paper_id(year, month, high)
+
+def is_month_different(start_id, end_id):
+    return (start_id[2:4] != end_id[2:4])

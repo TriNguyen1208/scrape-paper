@@ -32,30 +32,70 @@ def remove_figures(folder_path: str):
                 os.remove(item_path)  
 
 
+# def download_zip_file(paper_id: str, save_dir: str):
+#     url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
+#     os.makedirs(save_dir, exist_ok=True)
+#     dest_path = os.path.join(save_dir, paper_id)
+#     # headers = {
+#     #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+#     # }
+#     response = requests.get(url, stream=True)
+#     if response.status_code == 200:
+#         content_type = response.headers.get('Content-Type', '')
+        
+#         if 'x-tar' in content_type or 'tar' in content_type:
+#             ext = '.tar.gz'
+#         elif 'gzip' in content_type:
+#             ext = '.gz'
+#         else:
+#             return None
+        
+#         dest_path += ext
+        
+#         with open(dest_path, "wb") as f:
+#             shutil.copyfileobj(response.raw, f)
+#         return dest_path
+#     elif response.status_code == 404:
+#         sys.stdout.write('\n')
+#         print(f"{paper_id} has been deleted! (404 NOT FOUND)")
+#         return ''
+#     else:
+#         sys.stdout.write('\n')
+#         print(f"[Exception][download_zip_file]: Failed to download {paper_id}: HTTP {response.status_code}")
+#         return None
+
 def download_zip_file(paper_id: str, save_dir: str):
     url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
     os.makedirs(save_dir, exist_ok=True)
-    dest_path = os.path.join(save_dir, paper_id)
-    # headers = {
-    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    # }
+    
     response = requests.get(url, stream=True)
     if response.status_code == 200:
-        content_type = response.headers.get('Content-Type', '')
+        temp_path = os.path.join(save_dir, f"{paper_id}.tmp")
         
-        if 'gzip' in content_type:
-            ext = '.gz'
-        elif 'x-tar' in content_type:
-            ext = '.tar.gz'
-        else:
-            ext = '.gz'
-        
-        dest_path += ext
-        
-        with open(dest_path, "wb") as f:
+        with open(temp_path, "wb") as f:
             shutil.copyfileobj(response.raw, f)
+        
+        with open(temp_path, "rb") as f:
+            magic = f.read(4)
+        
+        if magic[:2] == b'%P':  # PDF file (%PDF)
+            return None
+        elif magic[:2] == b'\x1f\x8b':  # gzip magic number
+            if tarfile.is_tarfile(temp_path):
+                ext = '.tar.gz'
+            else:
+                ext = '.gz'
+        
+        dest_path = os.path.join(save_dir, paper_id + ext)
+        os.rename(temp_path, dest_path)
+        
         return dest_path
+    elif response.status_code == 404:
+        sys.stdout.write('\n')
+        print(f"{paper_id} has been deleted! (404 NOT FOUND)")
+        return ''
     else:
+        sys.stdout.write('\n')
         print(f"[Exception][download_zip_file]: Failed to download {paper_id}: HTTP {response.status_code}")
         return None
 
@@ -75,7 +115,7 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
 
     for attempt in range(1, retry_times + 1):
         try:
-            download_zip_file(paper_id=yyyymm_idv, save_dir=save_path)
+            dest_path = download_zip_file(paper_id=yyyymm_idv, save_dir=save_path)
             # paper.download_source(dirpath=save_path, filename=f"{yyyymm_idv}.tar.gz")
             break
 
@@ -92,54 +132,63 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
             
             time.sleep(ARXIV_RATE_LIMIT)
 
-    #Extract the tar file
-    extract_dir = os.path.join(save_path, yyyymm_idv)
-    os.makedirs(extract_dir, exist_ok=True)
+    if dest_path is not None:
+        #Extract the tar file
+        extract_dir = os.path.join(save_path, yyyymm_idv)
+        os.makedirs(extract_dir, exist_ok=True)
 
-    tar_path = os.path.join(save_path, f"{yyyymm_idv}.tar.gz")
-    gz_path = os.path.join(save_path, f"{yyyymm_idv}.gz")
-    
-    try:
-        if os.path.exists(tar_path):
-            if tarfile.is_tarfile(tar_path):
-                with tarfile.open(tar_path, "r:gz") as tar:
-                    tar.extractall(path=extract_dir)
+        tar_path = os.path.join(save_path, f"{yyyymm_idv}.tar.gz")
+        gz_path = os.path.join(save_path, f"{yyyymm_idv}.gz")
+        
+        try:
+            if os.path.exists(tar_path):
+                if tarfile.is_tarfile(tar_path):
+                    with tarfile.open(tar_path, "r:gz") as tar:
+                        tar.extractall(path=extract_dir)
+                        
+                os.remove(tar_path)
+            else:
+                with gzip.open(gz_path, 'rb') as f_in:
+                    file_name = getattr(f_in, 'name', None)
                     
-            os.remove(tar_path)
+                    if not file_name:
+                        file_name = os.path.basename(gz_path)[:-3]
+                        
+                    file_name = os.path.splitext(os.path.basename(file_name))[0]
+
+                    output_path = os.path.join(extract_dir, file_name + '.tex')
+                    
+                    with open(output_path, "wb") as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+                        
+                os.remove(gz_path)
+        
+        except Exception as e:
+            sys.stdout.write('\n')
+            print(f"[EXCEPTION][save_one_tex][extract]: Failed to extract {tar_path}: {e}")
+            return {}
+
+        #Remove figures
+        paper_size = {}
+        if (report_size):
+            paper_size_before = get_folder_size(extract_dir)
+            remove_figures(extract_dir)
+            paper_size_after = get_folder_size(extract_dir)
+
+            #Update paper_size
+            paper_size['id'] = yyyymm_idv
+            paper_size['size'] = {"before": paper_size_before, "after": paper_size_after}
         else:
-            with gzip.open(gz_path, 'rb') as f_in:
-                file_name = getattr(f_in, 'name', None)
-                
-                if not file_name:
-                    file_name = os.path.basename(gz_path)[:-3]
-                    
-                file_name = os.path.splitext(os.path.basename(file_name))[0]
-
-                output_path = os.path.join(extract_dir, file_name + '.tex')
-                
-                with open(output_path, "wb") as f_out:
-                    shutil.copyfileobj(f_in, f_out)
-                    
-            os.remove(gz_path)
-     
-    except Exception as e:
-        sys.stdout.write('\n')
-        print(f"[EXCEPTION][save_one_tex][extract]: Failed to extract {tar_path}: {e}")
-        return {}
-
-    #Remove figures
-    paper_size = {}
-    if (report_size):
-        paper_size_before = get_folder_size(extract_dir)
-        remove_figures(extract_dir)
-        paper_size_after = get_folder_size(extract_dir)
-
-        #Update paper_size
+            remove_figures(extract_dir)
+        return paper_size
+    
+    elif dest_path == '':
+        paper_size = {}
         paper_size['id'] = yyyymm_idv
-        paper_size['size'] = {"before": paper_size_before, "after": paper_size_after}
+        paper_size['size'] = {"before": 0, "after": 0}
+
     else:
-        remove_figures(extract_dir)
-    return paper_size
+        return {}
 
 def save_one_metadata(
     id: str, 
@@ -161,6 +210,6 @@ def save_one_reference(
     save_dir = os.path.join(save_root, id.replace('.', '-'))
     os.makedirs(save_dir, exist_ok=True)
 
-    save_path = os.path.join(save_dir, "reference.json")
+    save_path = os.path.join(save_dir, "references.json")
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(reference, f, ensure_ascii=False, indent=4)
