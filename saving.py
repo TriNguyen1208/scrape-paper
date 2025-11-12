@@ -31,16 +31,17 @@ def remove_figures(folder_path: str):
                 os.remove(item_path)  
 
 
-def download_zip_file(paper_id: str, save_dir:str):
+def download_zip_file(paper_id: str, save_dir: str):
     url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
     os.makedirs(save_dir, exist_ok=True)
     dest_path = os.path.join(save_dir, f"{paper_id}.tar.gz")
-
-    response = requests.get(url, stream=True)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    }
+    response = requests.get(url, headers=headers, stream=True)
     if response.status_code == 200:
         with open(dest_path, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
+            shutil.copyfileobj(response.raw, f)
         return dest_path
     else:
         print(f"[Exception][download_zip_file]: Failed to download {paper_id}: HTTP {response.status_code}")
@@ -67,7 +68,7 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
             break
 
         except Exception as e:
-            if '429' in e:
+            if '429' in str(e):
                 sys.stdout.write('\n')
                 print(f'429: Request too many times. Attempt {attempt}')
             else:
@@ -84,10 +85,15 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
     os.makedirs(extract_dir, exist_ok=True)
 
     tar_path = os.path.join(save_path, f"{yyyymm_idv}.tar.gz")
-
     try:
-        with tarfile.open(tar_path, "r:gz") as tar:
-            tar.extractall(path=extract_dir)
+        if tarfile.is_tarfile(tar_path):
+            with tarfile.open(tar_path, "r:gz") as tar:
+                tar.extractall(path=extract_dir)
+        else:
+            sys.stdout.write('\n')
+            # print(f"[EXCEPTION][save_one_tex]: {tar_path} is not a tar.gz file")
+            print(f'Fail to download and extract {tar_path}')
+            return {}
     
     except Exception as e:
         sys.stdout.write('\n')

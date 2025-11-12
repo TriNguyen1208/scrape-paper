@@ -7,8 +7,8 @@ from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 import sys
 
-NUM_DOWNLOAD_THREADS = 5
-NUM_EXTRACT_THREADS = 3
+NUM_DOWNLOAD_THREADS = 2
+NUM_EXTRACT_THREADS = 2
 NUM_SAVE_THREADS = 3
 
 q_extract = Queue()
@@ -77,8 +77,10 @@ def extracting_worker():
             q_save.put((paper_id, meta_data_paper, meta_data_reference))
             
         except Exception as e:
-            sys.stdout.write('\n')
-            print(f'[EXCEPTION][extracting_worker]: {e}')
+            if '400' in str(e):
+                sys.stdout.write('\n')
+                # print(f'[EXCEPTION][extracting_worker]: {e}')
+                print(f'Cannot get metadata and refs of {paper_id}. HTTP 400')
             
         finally:
             # sys.stdout.write('\n')

@@ -153,4 +153,6 @@ def extract_reference(
     meta_data = extract_metadata_reference_list(paper_list=papers_list)
     for key, value in meta_data.items():
         value["semantic_scholar_id"] = arxiv_scholar_id[key]
+        
+    time.sleep(SEMANTIC_RATE_LIMIT)
     return meta_data

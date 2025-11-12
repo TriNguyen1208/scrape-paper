@@ -6,7 +6,7 @@ import sys
 
 CLIENT = arxiv.Client()
 ARXIV_RATE_LIMIT = 3.5
-SEMANTIC_RATE_LIMIT = 1
+SEMANTIC_RATE_LIMIT = 2.5
 
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
     """
