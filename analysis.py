@@ -6,12 +6,6 @@ import os
 def get_total_papers(paperList):
     return {'totalPapers': len(paperList)}
 
-def get_avg_paper_size(paperList):
-    pass
-
-def get_avg_refs_per_paper(paperList):
-    pass
-
 # ========== Measurement ==========
 def measure_RAM_usage(memoryProcess, ramTrackingList, stopProcessFlag, interval=1):
     while not stopProcessFlag.is_set():
@@ -35,8 +29,8 @@ def apply_time_analysis(fieldName):
                 paperList = result
             
             metrics = {
-                f'totalTimeOf{fieldName}': f'{endTime - startTime:.3f}s',
-                f'averageTimeOf{fieldName}': f'{(endTime - startTime) / len(paperList):.3f}s'
+                f'TotalTimeOf{fieldName}': f'{endTime - startTime:.3f}s',
+                f'AverageTimeOf{fieldName}': f'{(endTime - startTime) / len(paperList):.3f}s'
             }
             
             return result, metrics
@@ -63,8 +57,8 @@ def apply_RAM_analysis(fieldName):
             averageRamUsage = (sum(ramTrackList) / len(ramTrackList)) if ramTrackList else 0
             
             metrics = {
-                f'highestRamUsage{fieldName}': f'{highestRamUsage / (1024 * 1024):.3f} MB',
-                f'averageRamUsage{fieldName}': f'{averageRamUsage / (1024 * 1024):.3f} MB'
+                f'HighestRamUsage{fieldName}': f'{highestRamUsage / (1024 * 1024):.3f} MB',
+                f'AverageRamUsage{fieldName}': f'{averageRamUsage / (1024 * 1024):.3f} MB'
             }
             return result, metrics
         return wrapper
@@ -114,8 +108,8 @@ def apply_disk_analysis(field_name, folder_path='.'):
             final_disk_storage = storage_track_list[-1] if storage_track_list else 0
 
             metrics = {
-                f'Highest disk usage {field_name}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
-                f'Final disk usage {field_name}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
+                f'HighestDiskUsage {field_name}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
+                f'FinalDiskUsage {field_name}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
             }
             return result, metrics
         return wrapper

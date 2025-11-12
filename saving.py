@@ -50,7 +50,7 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
             break
 
         except Exception as e:
-            if '429' in e:
+            if '429' in str(e):
                 sys.stdout.write('\n')
                 print(f'429: Request too many times. Attempt {attempt}')
             else:

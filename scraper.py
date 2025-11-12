@@ -50,7 +50,7 @@ def get_daily_paper_ids(query, max_results=1000,
             break
 
         except Exception as e:
-            if '429' in e:
+            if '429' in str(e):
                 sys.stdout.write('\n')
                 print(f'429: Request too many times. Attempt {attempt}')
             else:
@@ -119,7 +119,7 @@ def get_date_range_from_id(start_id, end_id, retry_times:int=3):
             break
             
         except Exception as e:
-            if '429' in e:
+            if '429' in str(e):
                 sys.stdout.write('\n')
                 print(f'429: Request too many times. Attempt {attempt}')
             else:
@@ -241,7 +241,7 @@ def crawl_id_batches(batch:list[str], retry_times:int=3) -> list[arxiv.Result]:
             break
             
         except Exception as e:
-            if '429' in e:
+            if '429' in str(e):
                 sys.stdout.write('\n')
                 print(f'429: Request too many times. Attempt {attempt}')
             else:
