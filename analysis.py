@@ -15,56 +15,68 @@ def measure_RAM_usage(memoryProcess, ramTrackingList, stopProcessFlag, interval=
 
 
 # Decorator functions
-def apply_time_analysis(fieldName):
+def apply_analysis(fieldName, folder_path='.'):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            startTime = time.time()
-            
-            result = func(*args, **kwargs)
-            
-            endTime = time.time()
-            
-            if isinstance(result, tuple) and (len(result) >= 2):
-                paperList, *_ = result
-            else:
-                paperList = result
-            
-            metrics = {
-                f'TotalTimeOf{fieldName}': f'{endTime - startTime:.3f}s',
-                f'AverageTimeOf{fieldName}': f'{(endTime - startTime) / len(paperList):.3f}s'
-            }
-            
-            return result, metrics
-        return wrapper
-    return decorator
-
-def apply_RAM_analysis(fieldName):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
+            # RAM tracking
             memoryProcess = psutil.Process()
             ramTrackList = []
-            stopProcessFlag = threading.Event()
-            
-            ramThread = threading.Thread(target=measure_RAM_usage, args=(memoryProcess, ramTrackList, stopProcessFlag,))
+            stopRAMFlag = threading.Event()
+            ramThread = threading.Thread(target=measure_RAM_usage, args=(memoryProcess, ramTrackList, stopRAMFlag,))
             ramThread.start()
-            
+
+            # Disk tracking
+            storage_track_list = []
+            stopDiskFlag = threading.Event()
+            disk_thread = threading.Thread(target=measure_disk_usage, args=(folder_path, storage_track_list, stopDiskFlag))
+            disk_thread.start()
+
+            # Time tracking
+            startTime = time.time()
             result = func(*args, **kwargs)
-            
-            stopProcessFlag.set()
+            endTime = time.time()
+
+            # Stop threads
+            stopRAMFlag.set()
             ramThread.join()
-            
-            # Calculate the ram usage
+            stopDiskFlag.set()
+            disk_thread.join()
+
+            # RAM metrics
             highestRamUsage = max(ramTrackList) if ramTrackList else 0
             averageRamUsage = (sum(ramTrackList) / len(ramTrackList)) if ramTrackList else 0
-            
-            metrics = {
+            metrics_ram = {
                 f'HighestRamUsage{fieldName}': f'{highestRamUsage / (1024 * 1024):.3f} MB',
                 f'AverageRamUsage{fieldName}': f'{averageRamUsage / (1024 * 1024):.3f} MB'
             }
+
+            # Disk metrics
+            highest_disk_storage = max(storage_track_list) if storage_track_list else 0
+            final_disk_storage = storage_track_list[-1] if storage_track_list else 0
+            metrics_disk = {
+                f'HighestDiskUsage{fieldName}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
+                f'FinalDiskUsage{fieldName}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
+            }
+
+            # Time metrics
+            if isinstance(result, (list, tuple)) and len(result) > 0:
+                try:
+                    avg_time = (endTime - startTime) / len(result)
+                except TypeError:
+                    avg_time = endTime - startTime
+            else:
+                avg_time = endTime - startTime
+
+            metrics_time = {
+                f'TotalTimeOf{fieldName}': f'{endTime - startTime:.3f}s',
+                f'AverageTimeOf{fieldName}': f'{avg_time:.3f}s'
+            }
+
+            # Combine all metrics
+            metrics = {**metrics_ram, **metrics_time, **metrics_disk}
             return result, metrics
         return wrapper
     return decorator
-
 
 def get_dir_size(path="."):
     total_size = 0
@@ -85,37 +97,6 @@ def measure_disk_usage(
         size = get_dir_size(folder_path)
         storage_track_list.append(size)
         time.sleep(interval)
-
-
-def apply_disk_analysis(field_name, folder_path='.'):
-    def decorator(func):
-        def wrapper(*arg, **kwargs):
-            storage_track_list = []
-            stop_progress_flag = threading.Event()
-
-            disk_thread = threading.Thread(
-                target=measure_disk_usage,
-                args=(folder_path, storage_track_list, stop_progress_flag)
-            )
-
-            disk_thread.start()
-
-            result = func(*arg, **kwargs)
-
-            stop_progress_flag.set()
-            disk_thread.join()
-
-            highest_disk_storage = max(storage_track_list) if storage_track_list else 0
-            final_disk_storage = storage_track_list[-1] if storage_track_list else 0
-
-            metrics = {
-                f'HighestDiskUsage {field_name}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
-                f'FinalDiskUsage {field_name}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
-            }
-            return result, metrics
-        return wrapper
-    return decorator
-
 
 def analysis_reference(dirname="./23127072"):
     count_reference = 0
@@ -138,6 +119,12 @@ def analysis_reference(dirname="./23127072"):
                     count_ref += 1
                 count_reference_per_paper.append(count_ref)
 
-    rate_success = count_reference / total_paper
-    count_reference_per_paper_average = sum(count_reference_per_paper) // len(count_reference_per_paper)
+    if total_paper == 0:
+        rate_success = 0
+    else:
+        rate_success = count_reference / total_paper
+    if len(count_reference_per_paper) == 0:
+        count_reference_per_paper_average = 0
+    else:
+        count_reference_per_paper_average = sum(count_reference_per_paper) // len(count_reference_per_paper)
     return rate_success, count_reference_per_paper_average
