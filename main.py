@@ -37,22 +37,19 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
         save_dict_to_json(paper_size, "paper_sizes.json")
         return {}
 
-from extract_data import extract_reference
+from saving import save_one_tex
+import arxiv
 
 if __name__ == "__main__":
-    start_time = time.time()
-    metrics = main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_THREADS, withAnalysis=True)
-    print()
+    # start_time = time.time()
+    # metrics = main(start_id=START_ID, end_id=END_ID, max_workers=NUM_THREADS, withAnalysis=True)
+    # print()
     
-    for key, value in metrics.items():
-        print(f'{key}: {value}')
-    print("Time: ", time.time() - start_time)   
+    # for key, value in metrics.items():
+    #     print(f'{key}: {value}')
+    # print("Time: ", time.time() - start_time)   
     
-    # search = arxiv.Search(id_list=['2306.14505v1'])
-    # paper = list(arxiv.Client().results(search))
+    search = arxiv.Search(id_list=['2306.14602v1'])
+    paper = list(arxiv.Client().results(search))
     
-    # size = save_one_tex(paper[0])
-    
-    # paper = '2306.14557'
-    # metadata = extract_reference(paper)
-    # print(metadata)
+    size = save_one_tex(paper[0])

@@ -6,6 +6,7 @@ import tarfile
 import sys
 import time
 import requests
+import gzip
 from utils import get_id_from_arxiv_link, get_folder_size, ARXIV_RATE_LIMIT
 
 def remove_figures(folder_path: str):
@@ -34,12 +35,23 @@ def remove_figures(folder_path: str):
 def download_zip_file(paper_id: str, save_dir: str):
     url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
     os.makedirs(save_dir, exist_ok=True)
-    dest_path = os.path.join(save_dir, f"{paper_id}.tar.gz")
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    }
-    response = requests.get(url, headers=headers, stream=True)
+    dest_path = os.path.join(save_dir, paper_id)
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    # }
+    response = requests.get(url, stream=True)
     if response.status_code == 200:
+        content_type = response.headers.get('Content-Type', '')
+        
+        if 'gzip' in content_type:
+            ext = '.gz'
+        elif 'x-tar' in content_type:
+            ext = '.tar.gz'
+        else:
+            ext = '.gz'
+        
+        dest_path += ext
+        
         with open(dest_path, "wb") as f:
             shutil.copyfileobj(response.raw, f)
         return dest_path
@@ -85,16 +97,31 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
     os.makedirs(extract_dir, exist_ok=True)
 
     tar_path = os.path.join(save_path, f"{yyyymm_idv}.tar.gz")
-    try:
-        if tarfile.is_tarfile(tar_path):
-            with tarfile.open(tar_path, "r:gz") as tar:
-                tar.extractall(path=extract_dir)
-        else:
-            sys.stdout.write('\n')
-            # print(f"[EXCEPTION][save_one_tex]: {tar_path} is not a tar.gz file")
-            print(f'Fail to download and extract {tar_path}')
-            return {}
+    gz_path = os.path.join(save_path, f"{yyyymm_idv}.gz")
     
+    try:
+        if os.path.exists(tar_path):
+            if tarfile.is_tarfile(tar_path):
+                with tarfile.open(tar_path, "r:gz") as tar:
+                    tar.extractall(path=extract_dir)
+                    
+            os.remove(tar_path)
+        else:
+            with gzip.open(gz_path, 'rb') as f_in:
+                file_name = getattr(f_in, 'name', None)
+                
+                if not file_name:
+                    file_name = os.path.basename(gz_path)[:-3]
+                    
+                file_name = os.path.splitext(os.path.basename(file_name))[0]
+
+                output_path = os.path.join(extract_dir, file_name + '.tex')
+                
+                with open(output_path, "wb") as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                    
+            os.remove(gz_path)
+     
     except Exception as e:
         sys.stdout.write('\n')
         print(f"[EXCEPTION][save_one_tex][extract]: Failed to extract {tar_path}: {e}")
@@ -112,9 +139,6 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
         paper_size['size'] = {"before": paper_size_before, "after": paper_size_after}
     else:
         remove_figures(extract_dir)
-
-    os.remove(tar_path)
-    time.sleep(ARXIV_RATE_LIMIT)
     return paper_size
 
 def save_one_metadata(

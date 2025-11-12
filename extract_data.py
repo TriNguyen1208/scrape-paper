@@ -154,5 +154,4 @@ def extract_reference(
     for key, value in meta_data.items():
         value["semantic_scholar_id"] = arxiv_scholar_id[key]
         
-    time.sleep(SEMANTIC_RATE_LIMIT)
     return meta_data
