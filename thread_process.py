@@ -1,4 +1,4 @@
-from utils import display_progress, RATE_LIMIT
+from utils import display_progress
 from extract_data import extract_metadata, extract_reference
 from saving import save_one_tex, save_one_metadata, save_one_reference
 
@@ -6,9 +6,8 @@ import threading
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 import sys
-import time
 
-NUM_DOWNLOAD_THREADS = 3
+NUM_DOWNLOAD_THREADS = 5
 NUM_EXTRACT_THREADS = 3
 NUM_SAVE_THREADS = 3
 

@@ -2,7 +2,7 @@ import arxiv
 import requests
 import time
 import sys
-from utils import CLIENT, RATE_LIMIT
+from utils import CLIENT, SEMANTIC_RATE_LIMIT
 from dotenv import load_dotenv
 import os
 
@@ -131,8 +131,8 @@ def extract_reference(
     
     while response.status_code == 429:
         sys.stdout.write('\n')
-        print(f"Refetch getting references after {RATE_LIMIT} second...")
-        time.sleep(RATE_LIMIT)
+        print(f"Refetch getting references after {SEMANTIC_RATE_LIMIT} second...")
+        time.sleep(SEMANTIC_RATE_LIMIT)
         response = requests.get(url=url, params=params)
 
     data = response.json()

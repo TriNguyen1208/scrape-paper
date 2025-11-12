@@ -1,5 +1,5 @@
 from scraper import get_all_papers
-from utils import convert_paper_list_to_dictionary, display_progress, RATE_LIMIT
+from utils import convert_paper_list_to_dictionary
 # from extract_data import extract_metadata, extract_reference
 # from saving import save_one_tex, save_one_metadata, save_one_reference
 from analysis import apply_disk_analysis, apply_time_analysis, apply_RAM_analysis
@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 START_ID = '2306.14505'
 END_ID = '2307.11656'
 TEST_END_ID = '2307.00140'
-NUM_THREADS = 5
+NUM_THREADS = 2
 
 # def execute_paper(paper_dict: dict) -> dict:
 #     paper_id = paper_dict['id']
@@ -53,11 +53,11 @@ def main(max_workers:int=5, withAnalysis:bool=False):
     
     # paper_size = execute_paper_multithread(paper_dict_list, NUM_THREADS)
 
-    paper_size = execute_pipeline(paper_dict_list[:5])
+    paper_size = execute_pipeline(paper_dict_list[:])
     print(f'Total papers: {len(paper_size)}')
 
 if __name__ == "__main__":
     start_time = time.time()
     main(max_workers=NUM_THREADS)
     print("Time: ", time.time() - start_time)
-    print()
+    print()        

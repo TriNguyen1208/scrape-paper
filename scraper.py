@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import sys
 
-from utils import get_id_from_arxiv_link, display_progress, CLIENT, RATE_LIMIT
+from utils import get_id_from_arxiv_link, display_progress, CLIENT, ARXIV_RATE_LIMIT
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
@@ -13,7 +13,8 @@ BATCH_SIZE = 200
 
 def get_daily_paper_ids(query, max_results=1000,
                   sort_by=arxiv.SortCriterion.SubmittedDate,
-                  sort_order=arxiv.SortOrder.Ascending):
+                  sort_order=arxiv.SortOrder.Ascending,
+                  retry_times:int=3) -> list[str]:
 
     '''
     A function to crawl paper using arxiv API
@@ -28,28 +29,40 @@ def get_daily_paper_ids(query, max_results=1000,
         The feature to sort
     sort_order: arxiv.SortOrder
         The sort order (Ascending, Descending)
+    retry_times: int
+        The number of attempts to crawl
 
     Return
     ------
     list of str
         List of papers'id with format (xxxx.xxxxxvx, x is a digit from 0 to 9)
-    '''
+    ''' 
     
-    try:
-        search = arxiv.Search(query=query,
-                        max_results=max_results,
-                        sort_by=sort_by,
-                        sort_order=sort_order)
+    for attempt in range(1, retry_times + 1):
+        try:
+            search = arxiv.Search(query=query,
+                            max_results=max_results,
+                            sort_by=sort_by,
+                            sort_order=sort_order)
 
-        
-        paper_list = list(CLIENT.results(search))
+            
+            paper_list = list(CLIENT.results(search))
+            break
 
-    except Exception as e:
-        sys.stdout.write('\n')
-        print(f'[EXCEPTION][get_daily_paper_ids]: {e}')
-        return None
+        except Exception as e:
+            if '429' in e:
+                sys.stdout.write('\n')
+                print(f'429: Request too many times. Attempt {attempt}')
+            else:
+                sys.stdout.write('\n')
+                print(f'[EXCEPTION][get_daily_paper_ids]: {e}')
+                
+            if attempt == retry_times:
+                return []
+            
+            time.sleep(ARXIV_RATE_LIMIT)
 
-    time.sleep(RATE_LIMIT)
+    time.sleep(ARXIV_RATE_LIMIT)
 
     return [get_id_from_arxiv_link(paper.entry_id, with_version=True) for paper in paper_list]
 
@@ -81,7 +94,7 @@ def filter_papers_in_id_range(paper_id_list, start_id=None, end_id=None):
     return [paper for paper in paper_id_list if start_id <= get_id_from_arxiv_link(paper, with_version=False) <= end_id]
 
 
-def get_date_range_from_id(start_id, end_id):
+def get_date_range_from_id(start_id, end_id, retry_times:int=3):
     '''
     A function to detect start date and end date from ids
 
@@ -91,15 +104,32 @@ def get_date_range_from_id(start_id, end_id):
         paper's start ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
     end_id: str
         paper's end ID (format: 'xxxx.xxxxx', x is a digit from 0 to 9)
+    retry_times: int
+        The number of attempts to crawl
     
     Return
     ------
     tuple of datetime.datetime (format: '%Y-%m-%d %H:%M:%S)
         a tuple with start date and end date
     '''
-    search = arxiv.Search(id_list=[start_id, end_id])
-    
-    paper_list = list(CLIENT.results(search))
+    for attempt in range(1, retry_times + 1):
+        try:
+            search = arxiv.Search(id_list=[start_id, end_id])
+            paper_list = list(CLIENT.results(search))
+            break
+            
+        except Exception as e:
+            if '429' in e:
+                sys.stdout.write('\n')
+                print(f'429: Request too many times. Attempt {attempt}')
+            else:
+                sys.stdout.write('\n')
+                print(f'[EXCEPTION][get_date_range_from_id]: {e}')
+                
+            if attempt == retry_times:
+                return []
+            
+            time.sleep(ARXIV_RATE_LIMIT)
     
     return(paper_list[0].published, paper_list[1].published)
 
@@ -188,7 +218,7 @@ def expand_to_all_versions(paper_ids:list[str]) -> list[str]:
     return paper_ids + expanded
             
 
-def crawl_id_batches(batch:list[str]) -> list[arxiv.Result]:
+def crawl_id_batches(batch:list[str], retry_times:int=3) -> list[arxiv.Result]:
     '''
     A function to crawl papers' id based in batch
     
@@ -196,21 +226,35 @@ def crawl_id_batches(batch:list[str]) -> list[arxiv.Result]:
     ---------
     batch: list of str
         A list contains papers' id (format: 'xxxx.xxxxxvx', x is a digit from 0 to 9)
+    retry_times: int
+        The number of attempts to crawl
         
     Return
     ------
     list of arxiv.Result
         a list contains elements with arxiv.Result type
     '''
-    try:
-        search = arxiv.Search(id_list=batch)
-        result = (list(CLIENT.results(search)))
-        time.sleep(RATE_LIMIT) # small delay to avoid server overload
-        
-        return result
-    except Exception as e:
-        print(f"[ERROR][crawl_id_batches]: {e}")
-        return None
+    for attempt in range(1, retry_times + 1):
+        try:
+            search = arxiv.Search(id_list=batch)
+            result = (list(CLIENT.results(search)))
+            break
+            
+        except Exception as e:
+            if '429' in e:
+                sys.stdout.write('\n')
+                print(f'429: Request too many times. Attempt {attempt}')
+            else:
+                sys.stdout.write('\n')
+                print(f"[ERROR][crawl_id_batches]: {e}")
+                
+            if attempt == retry_times:
+                return []
+            
+            time.sleep(ARXIV_RATE_LIMIT)
+            
+    time.sleep(ARXIV_RATE_LIMIT)
+    return result
 
 
 def crawl_all_versions_multithread(paper_ids:list[str], batch_size:int, max_workers:int=5) -> list[arxiv.Result]:
@@ -266,6 +310,7 @@ def get_all_papers(start_id:str, end_id:str, num_threads:int=5):
     list of arxiv.Result
         a list contains crawled papers
     '''
+    print('Get range')
     (start_date, end_date) = get_date_range_from_id(start_id, end_id)
     
     paper_id_list = crawl_all_daily_papers_multithread(start_date, end_date, num_threads)        # Get all daily papers within date range
@@ -283,20 +328,20 @@ def get_all_papers(start_id:str, end_id:str, num_threads:int=5):
 
 
 
-def test_func():
-    start_time = time.time()
+# def test_func():
+#     start_time = time.time()
     
-    paper_list = get_all_papers(START_ID, TEST_END_ID)
+#     paper_list = get_all_papers(START_ID, TEST_END_ID)
     
-    end_time = time.time()
-    print()
+#     end_time = time.time()
+#     print()
     
-    print(f'Duration: {(end_time - start_time):.2f}s')
-    print(f'Number of papers: {len(paper_list)}')
+#     print(f'Duration: {(end_time - start_time):.2f}s')
+#     print(f'Number of papers: {len(paper_list)}')
     
-    # Print for checking
-    for i in range(5):
-        print(f'{paper_list[i].entry_id} - {paper_list[i].title}')
+#     # Print for checking
+#     for i in range(5):
+#         print(f'{paper_list[i].entry_id} - {paper_list[i].title}')
     
     
     

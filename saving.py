@@ -4,9 +4,8 @@ import shutil
 import json
 import tarfile
 import sys
-import gzip
 import time
-from utils import get_id_from_arxiv_link, get_folder_size
+from utils import get_id_from_arxiv_link, get_folder_size, ARXIV_RATE_LIMIT
 
 def remove_figures(folder_path: str):
     '''
@@ -31,7 +30,7 @@ def remove_figures(folder_path: str):
                 os.remove(item_path)  
 
 
-def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bool = False):
+def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bool = False, retry_times:int=3):
     """
     Download all available versions of a paper given yyyymm-id (e.g., '2306-14525').
     """
@@ -40,30 +39,28 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
     yyyymm_idv = get_id_from_arxiv_link(paper.entry_id, True)
     base_id = get_id_from_arxiv_link(paper.entry_id, False)
     
-    if yyyymm_idv is None or base_id is None:
-        print(f"[EXCEPTION][save_one_tex]: Failed to parse IDs from entry_id={paper.entry_id}")
-        return {}
-    
     yyyymm_idv, base_id = yyyymm_idv.replace('.', '-'), base_id.replace('.', '-')
 
     save_path = os.path.join(save_root, base_id, "tex")
     os.makedirs(save_path, exist_ok=True)
 
-    try:
-        file_path = paper.download_source(dirpath=save_path, filename=f"{yyyymm_idv}.tar.gz")
-        if file_path is None:
-            print(f'[DEBUG][save_one_tex]: file_path is None. ({yyyymm_idv})')
-        else:
-            print(f'[DEBUG][save_one_tex]: file_path is not None. ({yyyymm_idv})')
+    for attempt in range(1, retry_times + 1):
+        try:
+            paper.download_source(dirpath=save_path, filename=f"{yyyymm_idv}.tar.gz")
+            break
 
-    except Exception as e:
-        sys.stdout.write('\n')
-        print(f'[EXCEPTION][save_one_tex][download_source]: {e}.')
-        return {}
-        
-        # if attempt == retry_attempts:
-        #     print(f'[EXCEPTION][save_one_tex]: Give up to retry')
-        #     return {}
+        except Exception as e:
+            if '429' in e:
+                sys.stdout.write('\n')
+                print(f'429: Request too many times. Attempt {attempt}')
+            else:
+                sys.stdout.write('\n')
+                print(f'[EXCEPTION][save_one_tex][download_source]: {e}.')
+            
+            if attempt == retry_times:
+                return {}
+            
+            time.sleep(ARXIV_RATE_LIMIT)
 
     #Extract the tar file
     extract_dir = os.path.join(save_path, yyyymm_idv)
@@ -93,7 +90,7 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
         remove_figures(extract_dir)
 
     os.remove(tar_path)
-    time.sleep(1)
+    time.sleep(ARXIV_RATE_LIMIT)
     return paper_size
 
 def save_one_metadata(
