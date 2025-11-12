@@ -1,8 +1,7 @@
 from scraper import get_all_papers
 from utils import convert_paper_list_to_dictionary, save_dict_to_json
-from analysis import apply_disk_analysis, apply_time_analysis, apply_RAM_analysis
+from analysis import apply_analysis, analysis_reference
 from thread_process import execute_pipeline
-
 import time
 
 START_ID = '2306.14505'
@@ -13,18 +12,26 @@ NUM_THREADS = 5
 def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
     if withAnalysis:
         metrics = {}
-        paper_list, metric = apply_time_analysis('CrawlPaperID')(get_all_papers)(start_id, end_id, max_workers)
+        paper_list, metric = apply_analysis('CrawlPaperID')(get_all_papers)(start_id, end_id, max_workers)
+
         metrics.update(metric)
         
         paper_dict_list = convert_paper_list_to_dictionary(paper_list)
-        
-        paper_size, metric = apply_time_analysis('ProcessPaper')(execute_pipeline)(paper_dict_list[:20])
+        paper_size, metric = apply_analysis('ProcessPaper')(execute_pipeline)(paper_dict_list)
+
         save_dict_to_json(paper_size, "paper_sizes.json")
         metrics.update(metric)
         
         metrics.update({'Number of expected crawled papers': len(paper_list)})
         metrics.update({'Number of successfully crawled papers': sum([1 for size in paper_size if size != {}])})
-        metrics.update({'Overall success rate': f'{(sum([1 for size in paper_size if size != {}]) / len(paper_list)) * 100:.3f}%'})
+        if len(paper_dict_list) == 0:
+            metrics.update({'Overall success rate': f'0%'})
+        else:
+            metrics.update({'Overall success rate': f'{(sum([1 for size in paper_size if size != {}]) / len(paper_dict_list)) * 100:.3f}%'})
+        rate_success, count_reference_per_paper_average = analysis_reference(dirname="./Save")
+        metrics.update({'Average number of references per paper': f'{count_reference_per_paper_average}'})
+        metrics.update({'Average success rate for scraping reference metadata': f'{rate_success * 100:.3f}%'})
+
         return metrics
         
     else:
