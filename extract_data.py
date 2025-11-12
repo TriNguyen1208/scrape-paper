@@ -24,7 +24,6 @@ def get_paper_from_id(
         a list contains id.
     '''
     paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
-    time.sleep(ARXIV_RATE_LIMIT)
     return paper
 
     

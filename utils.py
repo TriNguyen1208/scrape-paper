@@ -208,3 +208,20 @@ def find_first_id(year, month):
 
 def is_month_different(start_id, end_id):
     return (start_id[2:4] != end_id[2:4])
+
+
+def update_metrics(metrics, new_metric_data):
+    for key, value in new_metric_data.items():
+        if 'time' in key.lower():
+            metrics['time'].update({key: value})
+        else:
+            metrics['memory'].update({key: value})
+
+    return metrics
+
+def convert_second_to_format(value:float):
+    value = int(value)
+    minute = value // 60
+    second = value % 60
+    
+    return f'{minute}m {second}s'

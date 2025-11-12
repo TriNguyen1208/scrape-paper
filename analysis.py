@@ -3,6 +3,7 @@ import psutil
 import threading
 import os
 import json
+from utils import convert_second_to_format
 # ========== Analysis metrics ==========
 def get_total_papers(paperList):
     return {'totalPapers': len(paperList)}
@@ -46,16 +47,16 @@ def apply_analysis(fieldName, folder_path='.'):
             highestRamUsage = max(ramTrackList) if ramTrackList else 0
             averageRamUsage = (sum(ramTrackList) / len(ramTrackList)) if ramTrackList else 0
             metrics_ram = {
-                f'HighestRamUsage{fieldName}': f'{highestRamUsage / (1024 * 1024):.3f} MB',
-                f'AverageRamUsage{fieldName}': f'{averageRamUsage / (1024 * 1024):.3f} MB'
+                f'Highest_Ram_Usage_{fieldName}': f'{highestRamUsage / (1024 * 1024):.3f} MB',
+                f'Average_Ram_Usage{fieldName}': f'{averageRamUsage / (1024 * 1024):.3f} MB'
             }
 
             # Disk metrics
             highest_disk_storage = max(storage_track_list) if storage_track_list else 0
             final_disk_storage = storage_track_list[-1] if storage_track_list else 0
             metrics_disk = {
-                f'HighestDiskUsage{fieldName}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
-                f'FinalDiskUsage{fieldName}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
+                f'Highest_Disk_Usage_{fieldName}': f'{highest_disk_storage / (1024 * 1024):.3f} MB',
+                f'Final_Disk_Usage_{fieldName}': f'{final_disk_storage / (1024 * 1024):.3f} MB'
             }
 
             # Time metrics
@@ -68,8 +69,8 @@ def apply_analysis(fieldName, folder_path='.'):
                 avg_time = endTime - startTime
 
             metrics_time = {
-                f'TotalTimeOf{fieldName}': f'{endTime - startTime:.3f}s',
-                f'AverageTimeOf{fieldName}': f'{avg_time:.3f}s'
+                f'Total_Time_Of_{fieldName}': convert_second_to_format(endTime - startTime),
+                f'Average_Time_Of_{fieldName}': convert_second_to_format(endTime - startTime)
             }
 
             # Combine all metrics
@@ -112,7 +113,7 @@ def analysis_reference(dirname="./23127072"):
             count_reference += 1
             file_ref_name = os.path.join(folder_name, "references.json")
             
-            with open(file_ref_name) as f:
+            with open(file_ref_name, encoding='utf-8') as f:
                 references = json.load(f)
                 count_ref = 0
                 for _ in references.items():

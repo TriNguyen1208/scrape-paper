@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 import sys
 
 NUM_DOWNLOAD_THREADS = 3
-NUM_EXTRACT_THREADS = 3
+NUM_EXTRACT_THREADS = 4
 NUM_SAVE_THREADS = 3
 
 q_extract = Queue()

@@ -31,39 +31,6 @@ def remove_figures(folder_path: str):
             if ext not in allowed_exts:
                 os.remove(item_path)  
 
-
-# def download_zip_file(paper_id: str, save_dir: str):
-#     url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
-#     os.makedirs(save_dir, exist_ok=True)
-#     dest_path = os.path.join(save_dir, paper_id)
-#     # headers = {
-#     #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-#     # }
-#     response = requests.get(url, stream=True)
-#     if response.status_code == 200:
-#         content_type = response.headers.get('Content-Type', '')
-        
-#         if 'x-tar' in content_type or 'tar' in content_type:
-#             ext = '.tar.gz'
-#         elif 'gzip' in content_type:
-#             ext = '.gz'
-#         else:
-#             return None
-        
-#         dest_path += ext
-        
-#         with open(dest_path, "wb") as f:
-#             shutil.copyfileobj(response.raw, f)
-#         return dest_path
-#     elif response.status_code == 404:
-#         sys.stdout.write('\n')
-#         print(f"{paper_id} has been deleted! (404 NOT FOUND)")
-#         return ''
-#     else:
-#         sys.stdout.write('\n')
-#         print(f"[Exception][download_zip_file]: Failed to download {paper_id}: HTTP {response.status_code}")
-#         return None
-
 def download_zip_file(paper_id: str, save_dir: str):
     url = f"https://arxiv.org/e-print/{paper_id.replace('-', '.')}"
     os.makedirs(save_dir, exist_ok=True)
@@ -79,6 +46,7 @@ def download_zip_file(paper_id: str, save_dir: str):
             magic = f.read(4)
         
         if magic[:2] == b'%P':  # PDF file (%PDF)
+            os.remove(temp_path)
             return None
         elif magic[:2] == b'\x1f\x8b':  # gzip magic number
             if tarfile.is_tarfile(temp_path):
