@@ -2,6 +2,7 @@ import time
 import psutil
 import threading
 import os
+import json
 # ========== Analysis metrics ==========
 def get_total_papers(paperList):
     return {'totalPapers': len(paperList)}
@@ -114,3 +115,29 @@ def apply_disk_analysis(field_name, folder_path='.'):
             return result, metrics
         return wrapper
     return decorator
+
+
+def analysis_reference(dirname="./23127072"):
+    count_reference = 0
+    count_reference_per_paper = []
+    total_paper = 0
+    absolute_dir_name = os.path.dirname(os.path.abspath(__file__))
+    dirname = os.path.join(absolute_dir_name, dirname)
+
+    for folder in os.listdir(dirname):
+        folder_name = os.path.join(dirname, folder)
+        total_paper += 1
+        if "references.json" in os.listdir(folder_name):
+            count_reference += 1
+            file_ref_name = os.path.join(folder_name, "references.json")
+            
+            with open(file_ref_name) as f:
+                references = json.load(f)
+                count_ref = 0
+                for _ in references.items():
+                    count_ref += 1
+                count_reference_per_paper.append(count_ref)
+
+    rate_success = count_reference / total_paper
+    count_reference_per_paper_average = sum(count_reference_per_paper) // len(count_reference_per_paper)
+    return rate_success, count_reference_per_paper_average

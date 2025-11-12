@@ -161,6 +161,6 @@ def save_one_reference(
     save_dir = os.path.join(save_root, id.replace('.', '-'))
     os.makedirs(save_dir, exist_ok=True)
 
-    save_path = os.path.join(save_dir, "reference.json")
+    save_path = os.path.join(save_dir, "references.json")
     with open(save_path, "w", encoding="utf-8") as f:
         json.dump(reference, f, ensure_ascii=False, indent=4)
