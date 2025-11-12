@@ -43,7 +43,7 @@ def downloading_worker(paper_sizes):
                 size = save_one_tex(paper=paper_version, report_size=True)
                 
                 with paper_size_update_lock:
-                    paper_sizes.update(size)
+                    paper_sizes.append(size)
             
             q_extract.put((paper_id, versions))
         except Exception as e:
@@ -121,13 +121,12 @@ def saving_worker():
             # print(f'[DEBUG][saving_worker]: Task Done!')
             q_save.task_done()
     
-    
             
 def execute_pipeline(paper_dict_list):
     global total, completed
     total = len(paper_dict_list)
     completed = 0
-    paper_sizes = {}
+    paper_sizes = []
     
     for paper_dict in paper_dict_list:
         q_download.put(paper_dict)

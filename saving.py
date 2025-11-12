@@ -85,7 +85,8 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
         paper_size_after = get_folder_size(extract_dir)
 
         #Update paper_size
-        paper_size[yyyymm_idv] = {"before": paper_size_before, "after": paper_size_after}
+        paper_size['id'] = yyyymm_idv
+        paper_size['size'] = {"before": paper_size_before, "after": paper_size_after}
     else:
         remove_figures(extract_dir)
 

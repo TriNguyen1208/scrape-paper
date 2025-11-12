@@ -80,7 +80,6 @@ def get_dir_size(path="."):
                 total_size += os.path.getsize(fp)
     return total_size
 
-
 def measure_disk_usage(
     folder_path,
     storage_track_list, 

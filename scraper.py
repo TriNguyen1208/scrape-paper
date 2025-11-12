@@ -127,7 +127,7 @@ def get_date_range_from_id(start_id, end_id, retry_times:int=3):
                 print(f'[EXCEPTION][get_date_range_from_id]: {e}')
                 
             if attempt == retry_times:
-                return []
+                return (None, None)
             
             time.sleep(ARXIV_RATE_LIMIT)
     
@@ -310,8 +310,11 @@ def get_all_papers(start_id:str, end_id:str, num_threads:int=5):
     list of arxiv.Result
         a list contains crawled papers
     '''
-    print('Get range')
     (start_date, end_date) = get_date_range_from_id(start_id, end_id)
+    if (start_date is None or end_date is None):
+        sys.stdout.write('\n')
+        print(f'[ERROR][get_all_paper]: Cannot get date range.')
+        return []
     
     paper_id_list = crawl_all_daily_papers_multithread(start_date, end_date, num_threads)        # Get all daily papers within date range
 
