@@ -22,12 +22,12 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
         
         metrics = update_metrics(metrics, metric_process)
         
-        metrics['general'].update({'Number of expected crawled papers': len(paper_list)})
+        metrics['general'].update({'Number of expected crawled papers': len(paper_dict_list)})
         metrics['general'].update({'Number of successfully crawled papers': sum([1 for size in paper_size if size != {}])})
         if len(paper_dict_list) == 0:
             metrics['general'].update({'Overall success rate': f'0%'})
         else:
-            metrics['general'].update({'Overall success rate': f'{(sum([1 for size in paper_size if size != {}]) / len(paper_list)) * 100:.3f}%'})
+            metrics['general'].update({'Overall success rate': f'{(sum([1 for size in paper_size if size != {}]) / len(paper_dict_list)) * 100:.3f}%'})
         rate_success, count_reference_per_paper_average = analysis_reference(dirname="./Save")
         metrics['general'].update({'Average number of references per paper': f'{count_reference_per_paper_average}'})
         metrics['general'].update({'Average success rate for scraping reference metadata': f'{rate_success * 100:.3f}%'})

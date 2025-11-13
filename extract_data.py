@@ -4,8 +4,9 @@ import time
 import sys
 from dotenv import load_dotenv
 import os
+import re
 
-from config import CLIENT, SEMANTIC_RATE_LIMIT, ARXIV_RATE_LIMIT, SEMANTIC_DELAY_LOCK, semantic_last_request_time
+from config import CLIENT, SEMANTIC_RATE_LIMIT, ARXIV_RATE_LIMIT, SEMANTIC_DELAY_LOCK, semantic_last_request_time, ARXIV_DELAY_LOCK, arxiv_last_request_time
 
 load_dotenv()
 
@@ -25,8 +26,19 @@ def get_paper_from_id(
     list of arxiv_id without version
         a list contains id.
     '''
+    global arxiv_last_request_time
+    paper = []
+    
     for attempt in range(1, retry_times + 1):
         try:
+            with ARXIV_DELAY_LOCK:
+                time_since_last = time.time() - arxiv_last_request_time
+                
+                if time_since_last < ARXIV_RATE_LIMIT:
+                    time.sleep(ARXIV_RATE_LIMIT - time_since_last)
+                    
+                arxiv_last_request_time = time.time()
+            
             paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
             break
         
@@ -116,6 +128,7 @@ def extract_metadata_reference_list(
     metadata = {}
     for paper in paper_list:
         id = paper.get_short_id()[:-2]
+            
         metadata[id.replace('.', '-')] = extract_metadata_reference(paper)
     return metadata
 
@@ -193,12 +206,15 @@ def extract_reference(
     
     for reference in references:        
         external_id = reference.get("externalIds", {})
+        arxiv_id_ref = None
+        
         if external_id is not None:
             arxiv_id_ref = external_id.get("ArXiv")
             
         if arxiv_id_ref is not None:
             arxiv_id_ref_list.append(arxiv_id_ref)
             arxiv_scholar_id[arxiv_id_ref] = reference.get("paperId")
+            print(arxiv_id_ref)
             
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
     
@@ -207,6 +223,12 @@ def extract_reference(
     
     meta_data = extract_metadata_reference_list(paper_list=papers_list)
     for key, value in meta_data.items():
-        value["semantic_scholar_id"] = arxiv_scholar_id[key.replace('-', '.')]
+        
+        pattern = r'\d{4}.\d{5}'
+        
+        if re.match(pattern, key):
+            value["semantic_scholar_id"] = arxiv_scholar_id[key.replace('-', '.')]
+        else:
+            value["semantic_scholar_id"] = arxiv_scholar_id[key]
         
     return meta_data
