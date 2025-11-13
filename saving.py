@@ -7,7 +7,9 @@ import sys
 import time
 import requests
 import gzip
-from utils import get_id_from_arxiv_link, get_folder_size, ARXIV_RATE_LIMIT
+
+from utils import get_id_from_arxiv_link, get_folder_size
+from config import ARXIV_RATE_LIMIT, ARXIV_DELAY_LOCK, arxiv_last_request_time
 
 def remove_figures(folder_path: str):
     '''
@@ -72,6 +74,8 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
     Download all available versions of a paper given yyyymm-id (e.g., '2306-14525').
     """
 
+    global arxiv_last_request_time
+
     #Download the tar.gz
     yyyymm_idv = get_id_from_arxiv_link(paper.entry_id, True)
     base_id = get_id_from_arxiv_link(paper.entry_id, False)
@@ -80,11 +84,20 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
 
     save_path = os.path.join(save_root, base_id, "tex")
     os.makedirs(save_path, exist_ok=True)
+    
+    dest_path = None
 
     for attempt in range(1, retry_times + 1):
+        with ARXIV_DELAY_LOCK:
+            time_since_last = time.time() - arxiv_last_request_time
+            
+            if time_since_last < ARXIV_RATE_LIMIT:
+                time.sleep(ARXIV_RATE_LIMIT - time_since_last)
+                
+            arxiv_last_request_time = time.time()
+        
         try:
             dest_path = download_zip_file(paper_id=yyyymm_idv, save_dir=save_path)
-            # paper.download_source(dirpath=save_path, filename=f"{yyyymm_idv}.tar.gz")
             break
 
         except Exception as e:
@@ -100,7 +113,7 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
             
             time.sleep(ARXIV_RATE_LIMIT)
 
-    if dest_path is not None:
+    if dest_path is not None and dest_path != '':
         #Extract the tar file
         extract_dir = os.path.join(save_path, yyyymm_idv)
         os.makedirs(extract_dir, exist_ok=True)
@@ -113,8 +126,8 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
                 if tarfile.is_tarfile(tar_path):
                     with tarfile.open(tar_path, "r:gz") as tar:
                         tar.extractall(path=extract_dir)
-                        
                 os.remove(tar_path)
+                        
             else:
                 with gzip.open(gz_path, 'rb') as f_in:
                     file_name = getattr(f_in, 'name', None)
@@ -163,6 +176,9 @@ def save_one_metadata(
     metadata: dict, 
     save_root="./Save",
 ):
+    if metadata == {}:
+        return
+    
     save_dir = os.path.join(save_root, id.replace('.', '-'))
     os.makedirs(save_dir, exist_ok=True)
 
@@ -175,6 +191,9 @@ def save_one_reference(
     reference: dict, 
     save_root="./Save",
 ):
+    if reference == {}:
+        return
+    
     save_dir = os.path.join(save_root, id.replace('.', '-'))
     os.makedirs(save_dir, exist_ok=True)
 

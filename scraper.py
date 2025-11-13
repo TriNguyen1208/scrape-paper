@@ -4,9 +4,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import sys
 
-from utils import get_id_from_arxiv_link, display_progress, is_month_different, find_first_id, find_last_id, CLIENT, ARXIV_RATE_LIMIT
-
-BATCH_SIZE = 200
+from utils import get_id_from_arxiv_link, display_progress, is_month_different, find_first_id, find_last_id
+from config import CLIENT, ARXIV_RATE_LIMIT, FETCHING_BATCH_SIZE, ARXIV_DELAY_LOCK, arxiv_last_request_time
 
 
 def get_remaining_versions_of_paper(arxiv_id):
@@ -73,8 +72,20 @@ def crawl_id_batches(batch:list[str], retry_times:int=3) -> list[arxiv.Result]:
     list of arxiv.Result
         a list contains elements with arxiv.Result type
     '''
+    
+    global arxiv_last_request_time
+    result = []
+    
     for attempt in range(1, retry_times + 1):
         try:
+            with ARXIV_DELAY_LOCK:
+                time_since_last = time.time() - arxiv_last_request_time
+                
+                if time_since_last < ARXIV_RATE_LIMIT:
+                    time.sleep(ARXIV_RATE_LIMIT - time_since_last)
+                    
+                arxiv_last_request_time = time.time()
+                
             search = arxiv.Search(id_list=batch)
             result = (list(CLIENT.results(search)))
             break
@@ -92,7 +103,6 @@ def crawl_id_batches(batch:list[str], retry_times:int=3) -> list[arxiv.Result]:
             
             time.sleep(ARXIV_RATE_LIMIT)
             
-    time.sleep(ARXIV_RATE_LIMIT)
     return result
 
 
@@ -195,13 +205,13 @@ def get_all_papers(start_id:str, end_id:str, num_threads:int=5):
     list of arxiv.Result
         a list contains crawled papers
     '''
-    paper_list, paper_id_list = crawl_lastest_papers_multithread(start_id, end_id, BATCH_SIZE, num_threads)
+    paper_list, paper_id_list = crawl_lastest_papers_multithread(start_id, end_id, FETCHING_BATCH_SIZE, num_threads)
 
-    expanded_id_list = expand_to_all_versions(paper_id_list)                           # Get all the versions of each paper
+    expanded_id_list = expand_to_all_versions(paper_id_list)
 
-    print()
+    sys.stdout.write('\n')
 
-    expanded_list = crawl_all_versions_multithread(expanded_id_list, BATCH_SIZE, num_threads)
+    expanded_list = crawl_all_versions_multithread(expanded_id_list, FETCHING_BATCH_SIZE, num_threads)
 
-    print()
+    sys.stdout.write('\n')
     return sorted(paper_list + expanded_list, key=lambda d: d.entry_id)

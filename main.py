@@ -2,12 +2,8 @@ from scraper import get_all_papers
 from utils import convert_paper_list_to_dictionary, save_dict_to_json, update_metrics, convert_second_to_format
 from analysis import apply_analysis, analysis_reference
 from thread_process import execute_pipeline
+from config import START_ID, END_ID, TEST_END_ID, ID_RANGE, NUM_FETCHING_THREADS
 import time
-
-START_ID = '2306.14505'
-END_ID = '2307.11656'
-TEST_END_ID = '2306.14515'
-NUM_THREADS = 5
 
 def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
     if withAnalysis:
@@ -22,7 +18,7 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
         paper_dict_list = convert_paper_list_to_dictionary(paper_list)
         paper_size, metric_process = apply_analysis('ProcessPaper')(execute_pipeline)(paper_dict_list)
 
-        save_dict_to_json(paper_size, "paper_sizes.json")
+        # save_dict_to_json(paper_size, "paper_sizes.json")
         
         metrics = update_metrics(metrics, metric_process)
         
@@ -43,15 +39,17 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
         paper_dict_list = convert_paper_list_to_dictionary(paper_list)
 
         paper_size = execute_pipeline(paper_dict_list)
-        save_dict_to_json(paper_size, "paper_sizes.json")
+        # save_dict_to_json(paper_size, "paper_sizes.json")
         return {}
 
 
 if __name__ == "__main__":
     start_time = time.time()
-    metrics = main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_THREADS, withAnalysis=True)
+    # metrics = main(start_id=ID_RANGE[0][0], end_id=ID_RANGE[0][1], max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
+    metrics = main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
     
     print('=' * 50)
+    
     if metrics != {}:
         for analysis_field, sub_dict in metrics.items():
             print(f'{analysis_field.upper()}:')
