@@ -6,7 +6,7 @@ import time
 
 START_ID = '2306.14505'
 END_ID = '2307.11656'
-TEST_END_ID = '2306.14515'
+TEST_END_ID = '2307.00656'
 NUM_THREADS = 5
 
 def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
