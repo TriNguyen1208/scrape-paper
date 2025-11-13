@@ -1,23 +1,18 @@
-from utils import display_progress, SEMANTIC_RATE_LIMIT
+from utils import display_progress
 from extract_data import extract_metadata, extract_reference
 from saving import save_one_tex, save_one_metadata, save_one_reference
 
-import time
+from config import NUM_DOWNLOAD_THREADS, NUM_EXTRACT_THREADS, NUM_SAVE_THREADS
 import threading
 from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 import sys
-
-NUM_DOWNLOAD_THREADS = 3
-NUM_EXTRACT_THREADS = 4
-NUM_SAVE_THREADS = 3
 
 q_extract = Queue()
 q_download = Queue()
 q_save = Queue()
 
 progress_lock = threading.Lock()
-extract_lock = threading.Lock()
 paper_size_update_lock = threading.Lock()
 completed = 0
 total = 0
@@ -27,9 +22,6 @@ def downloading_worker(paper_sizes):
         paper_dict = q_download.get()
         
         if paper_dict is None:            
-            # sys.stdout.write('\n')
-            # print(f'[DEBUG][downloading_worker]: Get None')
-            
             q_download.task_done()
             break
         
@@ -37,9 +29,6 @@ def downloading_worker(paper_sizes):
         try:
             paper_id = paper_dict['id']
             versions = paper_dict['versions']
-            
-            # sys.stdout.write('\n')
-            # print(f'[DEBUG][downloading_worker]: Processing {paper_id}...')
             
             for paper_version in versions:
                 size = save_one_tex(paper=paper_version, report_size=True)
@@ -53,8 +42,6 @@ def downloading_worker(paper_sizes):
             print(f'[EXCEPTION][downloading_worker]: {e}')
             
         finally:     
-            # sys.stdout.write('\n')
-            # print(f'[DEBUG][downloading_worker]: Task Done!')   
             q_download.task_done()
         
 def extracting_worker():
@@ -75,20 +62,19 @@ def extracting_worker():
             sys.stdout.write('\n')
             print(f'Cannot get metadata of {paper_id}')
         
-        with extract_lock:
-            try:
-                meta_data_reference = extract_reference(paper_id)
-                    
-            except Exception as e:
+        
+        try:
+            meta_data_reference = extract_reference(paper_id)
+            
+            if meta_data_reference == {}:
                 meta_data_reference = None
-                if '400' in str(e):
-                    sys.stdout.write('\n')
-                    print(f'Refs of {paper_id} are not existed.')
-                else:
-                    sys.stdout.write('\n')
-                    print(f'Cannot get refs of {paper_id}')
+                sys.stdout.write('\n')
+                print(f'Cannot get refs of {paper_id}')
                 
-            time.sleep(SEMANTIC_RATE_LIMIT)
+        except Exception as e:
+            meta_data_reference = None
+            sys.stdout.write('\n')
+            print(f'Unexpected error during reference extraction for {paper_id}: {type(e).__name__} - {e}')
                 
         q_save.put((paper_id, meta_data_paper, meta_data_reference))
         q_extract.task_done()
@@ -99,15 +85,11 @@ def saving_worker():
         item = q_save.get()
         
         if item is None:
-            # sys.stdout.write('\n')
-            # print(f'[DEBUG][saving_worker]: Get None')
             
             q_save.task_done()
             break
         
         paper_id, meta_data_paper, meta_data_reference = item
-        # sys.stdout.write('\n')
-        # print(f'[DEBUG][saving_worker]: Processing {paper_id}...')
         
         try:
             if meta_data_paper is not None:
@@ -127,9 +109,7 @@ def saving_worker():
                 except Exception as e:
                     sys.stdout.write('\n')
                     print(f'[EXCEPTION][progress_lock][saving_worker]: {e}')
-                
-            # sys.stdout.write('\n')
-            # print(f'[DEBUG][saving_worker]: Task Done!')
+
             q_save.task_done()
     
             

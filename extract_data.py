@@ -2,14 +2,16 @@ import arxiv
 import requests
 import time
 import sys
-from utils import CLIENT, SEMANTIC_RATE_LIMIT, ARXIV_RATE_LIMIT
 from dotenv import load_dotenv
 import os
+
+from config import CLIENT, SEMANTIC_RATE_LIMIT, ARXIV_RATE_LIMIT, SEMANTIC_DELAY_LOCK, semantic_last_request_time
 
 load_dotenv()
 
 def get_paper_from_id(
-    arxiv_id_list: list[str]
+    arxiv_id_list: list[str],
+    retry_times:int=3
 ) -> list[arxiv.Result]:
     '''
     A function to paper from id.
@@ -23,7 +25,22 @@ def get_paper_from_id(
     list of arxiv_id without version
         a list contains id.
     '''
-    paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
+    for attempt in range(1, retry_times + 1):
+        try:
+            paper = list(CLIENT.results(arxiv.Search(id_list=arxiv_id_list)))
+            break
+        
+        except Exception as e:
+            is_recoverable = ('400' in str(e) or '429' in str(e))
+            
+            if is_recoverable:
+                if attempt < retry_times:
+                    time.sleep(ARXIV_RATE_LIMIT)
+                else:
+                    return []
+            else:
+                return []
+            
     return paper
 
     
@@ -104,7 +121,7 @@ def extract_metadata_reference_list(
 def extract_reference(
     arxiv_id: str,
     retry_times:int=3
-) -> object:
+) -> dict:
     '''
     A helper function to extract reference containing metadata of one paper
 
@@ -116,7 +133,17 @@ def extract_reference(
         object containing metadata
     ------
     '''
-
+    # Handle rate limit
+    global semantic_last_request_time
+    with SEMANTIC_DELAY_LOCK:
+        time_since_last = time.time() - semantic_last_request_time
+        
+        if time_since_last < SEMANTIC_RATE_LIMIT:
+            time.sleep(SEMANTIC_RATE_LIMIT - time_since_last)
+            
+        semantic_last_request_time = time.time()
+    
+    
     url = f"https://api.semanticscholar.org/graph/v1/paper/arXiv:{arxiv_id}"
     params = {
         "fields": "references.externalIds"
@@ -128,35 +155,55 @@ def extract_reference(
     if response.status_code == 404 or response.status_code == 400:
         sys.stdout.write('\n')
         print(f"Paper {arxiv_id} is not found in semantic scholar")
-        return
+        return {}
     
     if response.status_code == 429:
-        for attempt in range(1, retry_times + 1):
+        for _ in range(1, retry_times + 1):
             sys.stdout.write('\n')
             print(f"Refetch getting references after {SEMANTIC_RATE_LIMIT} second...")
+            
+            time.sleep(SEMANTIC_RATE_LIMIT)
+            
             response = requests.get(url=url, params=params)
 
             if response.status_code != 429:
                 break
             
-            time.sleep(SEMANTIC_RATE_LIMIT)
+        if response.status_code == 429:
+            return {}
         
-
-    data = response.json()
+    try:
+        data = response.json()
+        
+    except:
+        sys.stdout.write('\n')
+        print(f"Failed to decode JSON response for {arxiv_id}.")
+        return {}
+    
+    if data is None:
+        sys.stdout.write('\n')
+        print(f"Semantic Scholar API returned success status but an empty body for {arxiv_id}.")
+        return {}
+    
     references = data.get("references", [])
     
     arxiv_id_ref_list = []
     arxiv_scholar_id = {}
     
-    for reference in references:
+    for reference in references:        
         external_id = reference.get("externalIds", {})
         if external_id is not None:
             arxiv_id_ref = external_id.get("ArXiv")
+            
         if arxiv_id_ref is not None:
             arxiv_id_ref_list.append(arxiv_id_ref)
             arxiv_scholar_id[arxiv_id_ref] = reference.get("paperId")
             
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
+    
+    if papers_list == []:
+        return {}
+    
     meta_data = extract_metadata_reference_list(paper_list=papers_list)
     for key, value in meta_data.items():
         value["semantic_scholar_id"] = arxiv_scholar_id[key]

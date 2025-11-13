@@ -4,10 +4,6 @@ import arxiv
 from collections import defaultdict
 import sys
 
-CLIENT = arxiv.Client(delay_seconds=0.2)
-ARXIV_RATE_LIMIT = 3.2
-SEMANTIC_RATE_LIMIT = 1.2
-
 def save_paperlist_to_json(paper_list: list[arxiv.Result], save_path: str = "paperList.json"):
     """
     Save all papers' metadata from paperList into a JSON file.

@@ -70,7 +70,7 @@ def apply_analysis(fieldName, folder_path='.'):
 
             metrics_time = {
                 f'Total_Time_Of_{fieldName}': convert_second_to_format(endTime - startTime),
-                f'Average_Time_Of_{fieldName}': convert_second_to_format(endTime - startTime)
+                f'Average_Time_Of_{fieldName}': convert_second_to_format(avg_time)
             }
 
             # Combine all metrics
