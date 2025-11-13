@@ -49,7 +49,7 @@ def download_zip_file(paper_id: str, save_dir: str):
         
         if magic[:2] == b'%P':  # PDF file (%PDF)
             os.remove(temp_path)
-            return None
+            return ''
         elif magic[:2] == b'\x1f\x8b':  # gzip magic number
             if tarfile.is_tarfile(temp_path):
                 ext = '.tar.gz'

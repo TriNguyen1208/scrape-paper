@@ -214,7 +214,6 @@ def extract_reference(
         if arxiv_id_ref is not None:
             arxiv_id_ref_list.append(arxiv_id_ref)
             arxiv_scholar_id[arxiv_id_ref] = reference.get("paperId")
-            print(arxiv_id_ref)
             
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
     
