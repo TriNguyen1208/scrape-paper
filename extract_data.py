@@ -115,7 +115,8 @@ def extract_metadata_reference_list(
     '''
     metadata = {}
     for paper in paper_list:
-        metadata[paper.get_short_id()[:-2]] = extract_metadata_reference(paper)
+        id = paper.get_short_id()[:-2]
+        metadata[id.replace('.', '-')] = extract_metadata_reference(paper)
     return metadata
 
 def extract_reference(
@@ -206,6 +207,6 @@ def extract_reference(
     
     meta_data = extract_metadata_reference_list(paper_list=papers_list)
     for key, value in meta_data.items():
-        value["semantic_scholar_id"] = arxiv_scholar_id[key]
+        value["semantic_scholar_id"] = arxiv_scholar_id[key.replace('-', '.')]
         
     return meta_data
