@@ -111,6 +111,15 @@ def extract_metadata_reference(
         result["publication_venue"] = paper.journal_ref
     return result
 
+
+def get_metadata_key(arxiv_id:str) -> str:
+    pattern = r'\d{4}\.\d{5}'
+    
+    if re.match(pattern, arxiv_id):
+        return arxiv_id.replace('.', '-')
+    else:
+        return arxiv_id
+
 def extract_metadata_reference_list(
     paper_list: list[arxiv.Result],
 ) -> dict:
@@ -128,8 +137,14 @@ def extract_metadata_reference_list(
     metadata = {}
     for paper in paper_list:
         id = paper.get_short_id()[:-2]
-            
-        metadata[id.replace('.', '-')] = extract_metadata_reference(paper)
+        
+        pattern = r'\d{4}.\d{5}'
+        
+        if re.match(pattern, id):
+            metadata[id.replace('.', '-')] = extract_metadata_reference(paper)
+        else:
+            metadata[id] = extract_metadata_reference(paper)
+        
     return metadata
 
 def extract_reference(
@@ -213,7 +228,8 @@ def extract_reference(
             
         if arxiv_id_ref is not None:
             arxiv_id_ref_list.append(arxiv_id_ref)
-            arxiv_scholar_id[arxiv_id_ref] = reference.get("paperId")
+            
+            arxiv_scholar_id[get_metadata_key(arxiv_id_ref)] = reference.get("paperId")
             
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
     
@@ -222,12 +238,7 @@ def extract_reference(
     
     meta_data = extract_metadata_reference_list(paper_list=papers_list)
     for key, value in meta_data.items():
-        
-        pattern = r'\d{4}.\d{5}'
-        
-        if re.match(pattern, key):
-            value["semantic_scholar_id"] = arxiv_scholar_id[key.replace('-', '.')]
-        else:
+        if key in arxiv_scholar_id and isinstance(value, dict):
             value["semantic_scholar_id"] = arxiv_scholar_id[key]
         
     return meta_data

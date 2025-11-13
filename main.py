@@ -44,16 +44,16 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
 
 
 if __name__ == "__main__":
-    start_time = time.time()
-    # metrics = main(start_id=ID_RANGE[0][0], end_id=ID_RANGE[0][1], max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
-    metrics = main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
+    # start_time = time.time()
+    # # metrics = main(start_id=ID_RANGE[0][0], end_id=ID_RANGE[0][1], max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
+    # metrics = main(start_id=START_ID, end_id=TEST_END_ID, max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
     
-    print('=' * 50)
+    # print('=' * 50)
     
-    if metrics != {}:
-        for analysis_field, sub_dict in metrics.items():
-            print(f'{analysis_field.upper()}:')
-            for key, value in sub_dict.items():
-                print(f'- {key}: {value}')
+    # if metrics != {}:
+    #     for analysis_field, sub_dict in metrics.items():
+    #         print(f'{analysis_field.upper()}:')
+    #         for key, value in sub_dict.items():
+    #             print(f'- {key}: {value}')
             
-    print("Overall Time: ", convert_second_to_format(time.time() - start_time))
+    # print("Overall Time: ", convert_second_to_format(time.time() - start_time))
