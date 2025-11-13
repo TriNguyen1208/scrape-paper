@@ -2,7 +2,7 @@ import threading
 import arxiv
 
 # ========== Rate limit ==========
-ARXIV_RATE_LIMIT = 3.2
+ARXIV_RATE_LIMIT = 3.3
 SEMANTIC_RATE_LIMIT = 1.2
 CLIENT = arxiv.Client(delay_seconds=0.2)
 
@@ -23,7 +23,7 @@ FETCHING_BATCH_SIZE = 200
 # ========== Paper management ==========
 START_ID = '2306.14505'
 END_ID = '2307.11656'
-# TEST_END_ID = '2306.17004'
-TEST_END_ID = '2306.14506'
+TEST_END_ID = '2306.17004'
+# TEST_END_ID = '2306.14506'
 
 ID_RANGE = [['2306.14505', '2307.01656'], ['2307.01657', '2307.06656'], ['2307.06657', '2307.11656']]

@@ -153,6 +153,28 @@ def convert_paper_list_to_dictionary(paper_list:list[arxiv.Result])->list[dict]:
     return format_paper_dict
 
 
+def group_by_base_id_list(data_list):
+    """
+    Groups papers by their base ID (removing 'vX' version suffix) 
+    and returns the result as a list of dictionaries.
+    """
+    paper_dict = defaultdict(list)
+    
+    for item in data_list:
+        base_id = get_id_from_arxiv_link(item['id'], with_version=False)
+        paper_dict[base_id].append(item)
+        
+    result_list = [
+        {
+            "id": base_id,
+            "versions": versions_list
+        }
+        for base_id, versions_list in paper_dict.items()
+    ]
+    
+    return result_list
+
+
 def is_id_existed(paper_id):
     search = arxiv.Search(id_list=[paper_id])
     client = arxiv.Client(page_size=1, delay_seconds=0.2)

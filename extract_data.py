@@ -12,7 +12,7 @@ load_dotenv()
 
 def get_paper_from_id(
     arxiv_id_list: list[str],
-    retry_times:int=3
+    retry_times:int=5
 ) -> list[arxiv.Result]:
     '''
     A function to paper from id.
@@ -43,15 +43,10 @@ def get_paper_from_id(
             break
         
         except Exception as e:
-            is_recoverable = ('400' in str(e) or '429' in str(e))
-            
-            if is_recoverable:
                 if attempt < retry_times:
                     time.sleep(ARXIV_RATE_LIMIT)
                 else:
                     return []
-            else:
-                return []
             
     return paper
 
@@ -138,7 +133,7 @@ def extract_metadata_reference_list(
     for paper in paper_list:
         id = paper.get_short_id()[:-2]
         
-        pattern = r'\d{4}.\d{5}'
+        pattern = r'\d{4}\.\d{5}'
         
         if re.match(pattern, id):
             metadata[id.replace('.', '-')] = extract_metadata_reference(paper)
@@ -230,7 +225,7 @@ def extract_reference(
             arxiv_id_ref_list.append(arxiv_id_ref)
             
             arxiv_scholar_id[get_metadata_key(arxiv_id_ref)] = reference.get("paperId")
-            
+    
     papers_list = get_paper_from_id(arxiv_id_list=arxiv_id_ref_list)
     
     if papers_list == []:
