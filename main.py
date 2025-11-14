@@ -1,8 +1,8 @@
 from scraper import get_all_papers
-from utils import convert_paper_list_to_dictionary, save_dict_to_json, update_metrics, convert_second_to_format, group_by_base_id_list
+from utils import convert_paper_list_to_dictionary, save_dict_to_json, update_metrics, convert_second_to_format, calc_mean_paper_size, group_by_base_id_list
 from analysis import apply_analysis, analysis_reference
 from thread_process import execute_pipeline
-from config import START_ID, END_ID, TEST_START_ID, TEST_END_ID, ID_RANGE, NUM_FETCHING_THREADS
+from config import START_ID, END_ID, ID_RANGE, NUM_FETCHING_THREADS, ANALYSIS_MODE
 import time
 
 def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
@@ -36,6 +36,10 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
         metrics['general'].update({'Average number of references per paper': f'{count_reference_per_paper_average}'})
         metrics['general'].update({'Average success rate for scraping reference metadata': f'{rate_success * 100:.3f}%'})
 
+        paper_size_before, paper_size_after = calc_mean_paper_size(paper_sizes=paper_size)
+        metrics['general'].update({'Average paper size before removing figures': f'{paper_size_before} KB'})
+        metrics['general'].update({'Average paper size after removing figures': f'{paper_size_after} KB'})
+
         return metrics
         
     else:
@@ -50,7 +54,7 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
 if __name__ == "__main__":
     start_time = time.time()
     # metrics = main(start_id=ID_RANGE[0][0], end_id=ID_RANGE[0][1], max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
-    metrics = main(start_id=TEST_START_ID, end_id=TEST_END_ID, max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
+    metrics = main(start_id=START_ID, end_id=END_ID, max_workers=NUM_FETCHING_THREADS, withAnalysis=ANALYSIS_MODE)
     
     print('=' * 50)
     
