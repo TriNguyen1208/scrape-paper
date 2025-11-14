@@ -247,3 +247,16 @@ def convert_second_to_format(value:float):
     second = value % 60
     
     return f'{minute}m {second}s'
+
+def calc_mean_paper_size(paper_sizes: list):
+    before = []
+    after = []
+    count_paper = 0
+    for ps in paper_sizes:
+        count_paper += 1
+        before.append(ps['size']['before'])
+        after.append(ps['size']['after'])
+    
+    avg_size_before = round(sum(before)/(count_paper * 1024), 3)
+    avg_size_after = round(sum(after)/(count_paper * 1024), 3)
+    return avg_size_before, avg_size_after
