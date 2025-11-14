@@ -160,19 +160,23 @@ def group_by_base_id_list(data_list):
     """
     paper_dict = defaultdict(list)
     
-    for item in data_list:
-        base_id = get_id_from_arxiv_link(item['id'], with_version=False)
-        paper_dict[base_id].append(item)
-        
-    result_list = [
-        {
-            "id": base_id,
-            "versions": versions_list
-        }
-        for base_id, versions_list in paper_dict.items()
-    ]
+    try:
+        for item in data_list:
+            if item is not None and 'id' in item:
+                base_id = get_id_from_arxiv_link(item['id'], with_version=False)
+                paper_dict[base_id].append(item)
+            
+        result_list = [
+            {
+                "id": base_id,
+                "versions": versions_list
+            }
+            for base_id, versions_list in paper_dict.items()
+        ]
+        return result_list
     
-    return result_list
+    except:
+        return []
 
 
 def is_id_existed(paper_id):

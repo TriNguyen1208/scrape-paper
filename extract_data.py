@@ -144,7 +144,7 @@ def extract_metadata_reference_list(
 
 def extract_reference(
     arxiv_id: str,
-    retry_times:int=3
+    retry_times:int=5
 ) -> dict:
     '''
     A helper function to extract reference containing metadata of one paper
