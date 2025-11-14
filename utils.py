@@ -253,9 +253,10 @@ def calc_mean_paper_size(paper_sizes: list):
     after = []
     count_paper = 0
     for ps in paper_sizes:
-        count_paper += 1
-        before.append(ps['size']['before'])
-        after.append(ps['size']['after'])
+        if ps is not None:
+            count_paper += 1
+            before.append(ps['size']['before'])
+            after.append(ps['size']['after'])
     
     avg_size_before = round(sum(before)/(count_paper * 1024), 3)
     avg_size_after = round(sum(after)/(count_paper * 1024), 3)
