@@ -1,5 +1,5 @@
 from scraper import get_all_papers
-from utils import convert_paper_list_to_dictionary, save_dict_to_json, update_metrics, convert_second_to_format
+from utils import convert_paper_list_to_dictionary, save_dict_to_json, update_metrics, convert_second_to_format, group_by_base_id_list
 from analysis import apply_analysis, analysis_reference
 from thread_process import execute_pipeline
 from config import START_ID, END_ID, TEST_START_ID, TEST_END_ID, ID_RANGE, NUM_FETCHING_THREADS
@@ -22,13 +22,15 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
         
         metrics = update_metrics(metrics, metric_process)
 
-        metrics['general'].update({'Number of expected crawled papers': len(paper_list)})
-        metrics['general'].update({'Number of successfully crawled papers': sum([1 for size in paper_size if size != {} and size is not None])})
+        group_paper_size_list = group_by_base_id_list(paper_size)
+
+        metrics['general'].update({'Number of expected crawled papers': len(paper_dict_list)})
+        metrics['general'].update({'Number of successfully crawled papers': len(group_paper_size_list)})
         
         if len(paper_list) == 0:
             metrics['general'].update({'Overall success rate': f'0%'})
         else:
-            metrics['general'].update({'Overall success rate': f'{(sum([1 for size in paper_size if size != {} and size is not None]) / len(paper_list)) * 100:.3f}%'})
+            metrics['general'].update({'Overall success rate': f'{(len(group_paper_size_list) / len(paper_dict_list)) * 100:.3f}%'})
             
         rate_success, count_reference_per_paper_average = analysis_reference(dirname="./Save")
         metrics['general'].update({'Average number of references per paper': f'{count_reference_per_paper_average}'})

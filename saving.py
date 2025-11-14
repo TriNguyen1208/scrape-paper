@@ -167,6 +167,7 @@ def save_one_tex(paper: arxiv.Result, save_root: str = "./Save", report_size: bo
         paper_size = {}
         paper_size['id'] = yyyymm_idv
         paper_size['size'] = {"before": 0, "after": 0}
+        return paper_size
 
     else:
         return {}
