@@ -2,7 +2,7 @@ from scraper import get_all_papers
 from utils import convert_paper_list_to_dictionary, save_dict_to_json, update_metrics, convert_second_to_format, calc_mean_paper_size, group_by_base_id_list
 from analysis import apply_analysis, analysis_reference
 from thread_process import execute_pipeline
-from config import START_ID, END_ID, ID_RANGE, NUM_FETCHING_THREADS, ANALYSIS_MODE
+from config import START_ID, END_ID, NUM_FETCHING_THREADS, ANALYSIS_MODE
 import time
 
 def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
@@ -53,7 +53,6 @@ def main(start_id:str, end_id:str, max_workers:int=5, withAnalysis:bool=False):
 
 if __name__ == "__main__":
     start_time = time.time()
-    # metrics = main(start_id=ID_RANGE[0][0], end_id=ID_RANGE[0][1], max_workers=NUM_FETCHING_THREADS, withAnalysis=True)
     metrics = main(start_id=START_ID, end_id=END_ID, max_workers=NUM_FETCHING_THREADS, withAnalysis=ANALYSIS_MODE)
     
     print('=' * 50)
